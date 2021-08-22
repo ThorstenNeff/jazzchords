@@ -56,12 +56,14 @@ class MainActivity : ComponentActivity() {
             JazzchordsTheme(darkTheme = true) {
                 Box(
                     modifier = Modifier
+                        .background(Color.DarkGray)
                         .fillMaxWidth()
                         .fillMaxHeight(),
                 ) {
                     Surface(
                         modifier = Modifier
                             .align(Alignment.Center),
+                            // .offset(x = Dp(-baseWidth), y = Dp(0.0f)),
                         color = Color.Blue,
                     ) {
                         // A surface container using the 'background' color from the theme
@@ -124,13 +126,18 @@ fun FretStringView(
     viewModel: MainViewModel
 ) {
     val chordNotes: List<Note> by viewModel.currentChord.collectAsState()
-    val backgroundColor = if (openPosition) Color.White else Color.Black
+    val backgroundColor = if (openPosition) Color.DarkGray else Color.Black
     Box(
         modifier = Modifier
             .background(backgroundColor)
             .width(Dp(width))
             .height(Dp(baseHeight))
     ) {
+        Divider(
+            color = Color.LightGray.copy(alpha = 0.5f),
+            thickness = Dp( 1.0f),
+            modifier = Modifier.align(Alignment.Center)
+        )
         if (note.noteInChord(chordNotes)) {
             Surface(
                 modifier = Modifier
@@ -150,11 +157,6 @@ fun FretStringView(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-        Divider(
-            color = Color.LightGray,
-            thickness = Dp(0.2f),
-            modifier = Modifier.align(Alignment.Center)
-        )
     }
 }
 
