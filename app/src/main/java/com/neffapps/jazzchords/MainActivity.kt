@@ -3,10 +3,7 @@ package com.neffapps.jazzchords
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -61,7 +58,7 @@ fun FretboardView(frets: List<Fret>) {
 
 @ExperimentalUnitApi
 @Composable
-fun FretView(stringNotes: List<Note>, width: Dp) {
+fun FretView(stringNotes: List<Note>, width: Float) {
     Column {
         for (note in stringNotes) {
             FretStringView(note, width)
@@ -71,14 +68,14 @@ fun FretView(stringNotes: List<Note>, width: Dp) {
 
 @ExperimentalUnitApi
 @Composable
-fun FretStringView(note: Note, width: Dp) {
+fun FretStringView(note: Note, width: Float) {
     Box(
-        modifier = Modifier.width(width)
+        modifier = Modifier.width(Dp(width)).height(Dp(20.0f))
     ) {
         if (note.textVisible) {
             Text(
                 text = note.name,
-                fontSize = TextUnit(11.0f, TextUnitType.Sp),
+                fontSize = TextUnit(4.0f + width/4.0f, TextUnitType.Sp),
                 color = Color.LightGray,
                 modifier = Modifier.align(Alignment.Center)
             )

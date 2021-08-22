@@ -1,214 +1,76 @@
 package com.neffapps.jazzchords.notes
 
-import androidx.compose.ui.unit.Dp
-
 class Fretboard {
 
     companion object {
 
-        private const val baseWidth = 40.0f
+        private const val baseWidth = 20.0f
+
+        private val widthMultipliers = listOf<Float>(
+            1.4033f,
+            1.32454f,
+            1.2502f,
+            1.18003f,
+            1.1138f,
+            1.05129f,
+            0.99228f,
+            0.93659f,
+            0.88402f,
+            0.83441f,
+            0.78758f,
+            0.74337f,
+            0.70165f,
+            0.66227f,
+            0.6251f,
+            0.59001f,
+            0.5569f,
+            0.52564f,
+            0.49614f,
+            0.4683f,
+            0.44201f,
+            0.4172f,
+            0.39379f,
+            0.37169f,
+        )
+
+        fun getFret(
+            position: Int,
+            gNote: String,
+            cNote: String,
+            eNote: String,
+            aNote: String,
+        ) = Fret(
+            position,
+            listOf(
+                Note(position,1,aNote),
+                Note(position,2,eNote),
+                Note(position,3,cNote),
+                Note(position,4,gNote),
+            ),
+            baseWidth * widthMultipliers[position]
+        )
 
         val AllFrets = listOf(
-            Fret(
-                0,
-                listOf(
-                    Note(0,1,"A"),
-                    Note(0,2,"E"),
-                    Note(0,3,"C"),
-                    Note(0,4,"G"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                1,
-                listOf(
-                    Note(1,1,"Bb"),
-                    Note(1,2,"F"),
-                    Note(1,3,"C#"),
-                    Note(1,4,"G#"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                2,
-                listOf(
-                    Note(2,1,"B"),
-                    Note(2,2,"F#"),
-                    Note(2,3,"D"),
-                    Note(2,4,"A"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                3,
-                listOf(
-                    Note(3,1,"C"),
-                    Note(3,2,"G"),
-                    Note(3,3,"D#"),
-                    Note(3,4,"Bb"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                4,
-                listOf(
-                    Note(4,1,"C#"),
-                    Note(4,2,"G#"),
-                    Note(4,3,"E"),
-                    Note(4,4,"B"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                5,
-                listOf(
-                    Note(5,1,"D"),
-                    Note(5,2,"A"),
-                    Note(5,3,"F"),
-                    Note(5,4,"C"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                6,
-                listOf(
-                    Note(6,1,"D#"),
-                    Note(6,2,"Bb"),
-                    Note(6,3,"F#"),
-                    Note(6,4,"C#"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                7,
-                listOf(
-                    Note(7,1,"E"),
-                    Note(7,2,"B"),
-                    Note(7,3,"G"),
-                    Note(7,4,"D"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                8,
-                listOf(
-                    Note(8,1,"F"),
-                    Note(8,2,"C"),
-                    Note(8,3,"G#"),
-                    Note(8,4,"D#"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                9,
-                listOf(
-                    Note(9,1,"F#"),
-                    Note(9,2,"C#"),
-                    Note(9,3,"A"),
-                    Note(9,4,"E"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                10,
-                listOf(
-                    Note(10,1,"G"),
-                    Note(10,2,"D"),
-                    Note(10,3,"Bb"),
-                    Note(10,4,"F"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                11,
-                listOf(
-                    Note(11,1,"G#"),
-                    Note(11,2,"D#"),
-                    Note(11,3,"B"),
-                    Note(11,4,"F#"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                12,
-                listOf(
-                    Note(12,1,"A"),
-                    Note(12,2,"E"),
-                    Note(12,3,"C"),
-                    Note(12,4,"G"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                13,
-                listOf(
-                    Note(13,1,"Bb"),
-                    Note(13,2,"F"),
-                    Note(13,3,"C#"),
-                    Note(13,4,"G#"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                14,
-                listOf(
-                    Note(14,1,"B"),
-                    Note(14,2,"F#"),
-                    Note(14,3,"D"),
-                    Note(14,4,"A"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                15,
-                listOf(
-                    Note(15,1,"C"),
-                    Note(15,2,"G"),
-                    Note(15,3,"D#"),
-                    Note(15,4,"Bb"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                16,
-                listOf(
-                    Note(16,1,"C#"),
-                    Note(16,2,"G#"),
-                    Note(16,3,"E"),
-                    Note(16,4,"B"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                17,
-                listOf(
-                    Note(17,1,"D"),
-                    Note(17,2,"A"),
-                    Note(17,3,"F"),
-                    Note(17,4,"C"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                18,
-                listOf(
-                    Note(18,1,"D#"),
-                    Note(18,2,"Bb"),
-                    Note(18,3,"F#"),
-                    Note(18,4,"C#"),
-                ),
-                Dp(baseWidth)
-            ),
-            Fret(
-                19,
-                listOf(
-                    Note(19,1,"E"),
-                    Note(19,2,"B"),
-                    Note(19,3,"G"),
-                    Note(19,4,"D"),
-                ),
-                Dp(baseWidth)
-            ),
+            getFret(0, "G","C","E","A"),
+            getFret(1, "G#","C#","F","Bb"),
+            getFret(2, "A","D","F#","B"),
+            getFret(3, "Bb","D#","G","C"),
+            getFret(4, "B","E","G#","C#"),
+            getFret(5, "C","F","A","D"),
+            getFret(6, "C#","F#","Bb","D#"),
+            getFret(7, "D","G","B","E"),
+            getFret(8, "D#","G#","C","F"),
+            getFret(9, "E","A","C#","F#"),
+            getFret(10, "F","Bb","D","G"),
+            getFret(11, "F#","B","D#","G#"),
+            getFret(12, "G","C","E","A"),
+            getFret(13, "G#","C#","F","Bb"),
+            getFret(14, "A","D","F#","B"),
+            getFret(15, "Bb","D#","G","C"),
+            getFret(16, "B","E","G#","C#"),
+            getFret(17, "C","F","A","D"),
+            getFret(18, "C#","F#","Bb","D#"),
+            getFret(19, "D","G","B","E"),
         )
     }
 }
