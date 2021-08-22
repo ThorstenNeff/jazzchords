@@ -1,20 +1,24 @@
 package com.neffapps.jazzchords
 
 import androidx.lifecycle.ViewModel
-import com.neffapps.jazzchords.notes.Chords
+import com.neffapps.jazzchords.notes.M7AShapeChords
+import com.neffapps.jazzchords.notes.Minor7Chords
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainViewModel: ViewModel() {
 
-    var chord = Chords.Am7
+    var chords = Minor7Chords().getMinor7Chords()
 
-    var currentChord = MutableStateFlow(chord)
+    var currentChord = MutableStateFlow(chords[0])
         private set
 
     fun switchChord() {
-        chord = if (chord == Chords.Am7) Chords.Bbm7 else Chords.Am7
+        val currentChordIndex = rand(0, chords.size - 1)
+        currentChord.value = chords[currentChordIndex]
+    }
 
-        currentChord.value = listOf()
-        currentChord.value = chord
+    private fun rand(start: Int, end: Int): Int {
+        require(start <= end) { "Illegal Argument" }
+        return (Math.random() * (end - start + 1)).toInt() + start
     }
 }
