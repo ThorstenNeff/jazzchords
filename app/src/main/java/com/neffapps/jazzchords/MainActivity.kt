@@ -24,7 +24,7 @@ import com.neffapps.jazzchords.ui.theme.JazzchordsTheme
 class MainActivity : ComponentActivity() {
 
     private val delay: Long = 8000
-    private val allFrets = Fretboard.AllFrets
+    private lateinit var allFrets: List<Fret>
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var handler: Handler
 
@@ -43,10 +43,31 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handler = Handler(mainLooper)
+
+        val displayMetrics = resources.displayMetrics
+        val dpHeight = displayMetrics.heightPixels / displayMetrics.density
+        val dpWidth = displayMetrics.widthPixels / displayMetrics.density
+        val baseWidth = dpWidth / 20.0f
+        val baseHeight = dpHeight / 20.0f
+        allFrets = Fretboard.getAllFrets(baseWidth)
+
         setContent {
-            JazzchordsTheme {
-                // A surface container using the 'background' color from the theme
-                Content(allFrets, mainViewModel)
+            JazzchordsTheme(darkTheme = true) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.Center),
+                        color = Color.Blue,
+                    ) {
+                        // A surface container using the 'background' color from the theme
+                        Content(allFrets, baseHeight, mainViewModel)
+                    }
+                }
+
             }
         }
     }
@@ -59,46 +80,48 @@ class MainActivity : ComponentActivity() {
 
 @ExperimentalUnitApi
 @Composable
-fun Content(frets: List<Fret>, viewModel: MainViewModel) {
+fun Content(frets: List<Fret>, baseHeight: Float, viewModel: MainViewModel) {
 
     Surface(color = Color.Black) {
-        FretboardView(frets, viewModel)
+        FretboardView(frets, baseHeight, viewModel)
     }
 }
 
 @ExperimentalUnitApi
 @Composable
-fun FretboardView(frets: List<Fret>, viewModel: MainViewModel) {
+fun FretboardView(frets: List<Fret>, baseHeight: Float, viewModel: MainViewModel) {
     Row {
         frets.forEach { fret ->
-            FretView(fret.notes, fret.width, viewModel)
+            FretView(fret.notes, fret.width, baseHeight, viewModel)
         }
     }
 }
 
 @ExperimentalUnitApi
 @Composable
-fun FretView(stringNotes: List<Note>, width: Float, viewModel: MainViewModel) {
+fun FretView(stringNotes: List<Note>, width: Float, baseHeight: Float, viewModel: MainViewModel) {
     Column {
         for (note in stringNotes) {
-            FretStringView(note, width, viewModel)
+            FretStringView(note, width, baseHeight, viewModel)
         }
     }
 }
 
 @ExperimentalUnitApi
 @Composable
-fun FretStringView(note: Note, width: Float, viewModel: MainViewModel) {
+fun FretStringView(note: Note, width: Float, baseHeight: Float, viewModel: MainViewModel) {
     val chordNotes: List<Note> by viewModel.currentChord.collectAsState()
 
     Box(
         modifier = Modifier
             .width(Dp(width))
-            .height(Dp(20.0f))
+            .height(Dp(baseHeight))
     ) {
         if (note.noteInChord(chordNotes)) {
             Surface(
-                modifier = Modifier.size(20.dp).align(Alignment.Center),
+                modifier = Modifier
+                    .size(Dp(baseHeight - 2.0f))
+                    .align(Alignment.Center),
                 shape = CircleShape,
                 color = Color.Yellow.copy(alpha = 0.2f)
             ) {
@@ -127,6 +150,6 @@ fun FretStringView(note: Note, width: Float, viewModel: MainViewModel) {
 fun PhotographerCardPreview() {
     val mainViewModel = MainViewModel()
     JazzchordsTheme {
-        Content(Fretboard.AllFrets, mainViewModel)
+        Content(Fretboard.getAllFrets(20.0f), 20.0f, mainViewModel)
     }
 }

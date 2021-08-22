@@ -4,7 +4,7 @@ class Fretboard {
 
     companion object {
 
-        private const val baseWidth = 20.0f
+        // private const val baseWidth = 20.0f
 
         private val widthMultipliers = listOf<Float>(
             1.4033f,
@@ -39,6 +39,7 @@ class Fretboard {
             cNote: String,
             eNote: String,
             aNote: String,
+            baseWidth: Float = 20.0f,
         ) = Fret(
             position,
             listOf(
@@ -50,27 +51,27 @@ class Fretboard {
             baseWidth * widthMultipliers[position]
         )
 
-        val AllFrets = listOf(
-            getFret(0, "G","C","E","A"),
-            getFret(1, "G#","C#","F","Bb"),
-            getFret(2, "A","D","F#","B"),
-            getFret(3, "Bb","D#","G","C"),
-            getFret(4, "B","E","G#","C#"),
-            getFret(5, "C","F","A","D"),
-            getFret(6, "C#","F#","Bb","D#"),
-            getFret(7, "D","G","B","E"),
-            getFret(8, "D#","G#","C","F"),
-            getFret(9, "E","A","C#","F#"),
-            getFret(10, "F","Bb","D","G"),
-            getFret(11, "F#","B","D#","G#"),
-            getFret(12, "G","C","E","A"),
-            getFret(13, "G#","C#","F","Bb"),
-            getFret(14, "A","D","F#","B"),
-            getFret(15, "Bb","D#","G","C"),
-            getFret(16, "B","E","G#","C#"),
-            getFret(17, "C","F","A","D"),
-            getFret(18, "C#","F#","Bb","D#"),
-            getFret(19, "D","G","B","E"),
+        fun getAllFrets(baseWidth: Float): List<Fret> = listOf(
+            getFret(0, "G","C","E","A", baseWidth),
+            getFret(1, "G#","C#","F","Bb", baseWidth),
+            getFret(2, "A","D","F#","B", baseWidth),
+            getFret(3, "Bb","D#","G","C", baseWidth),
+            getFret(4, "B","E","G#","C#", baseWidth),
+            getFret(5, "C","F","A","D", baseWidth),
+            getFret(6, "C#","F#","Bb","D#", baseWidth),
+            getFret(7, "D","G","B","E", baseWidth),
+            getFret(8, "D#","G#","C","F", baseWidth),
+            getFret(9, "E","A","C#","F#", baseWidth),
+            getFret(10, "F","Bb","D","G", baseWidth),
+            getFret(11, "F#","B","D#","G#", baseWidth),
+            getFret(12, "G","C","E","A", baseWidth),
+            getFret(13, "G#","C#","F","Bb", baseWidth),
+            getFret(14, "A","D","F#","B", baseWidth),
+            getFret(15, "Bb","D#","G","C", baseWidth),
+            getFret(16, "B","E","G#","C#", baseWidth),
+            getFret(17, "C","F","A","D", baseWidth),
+            getFret(18, "C#","F#","Bb","D#", baseWidth),
+            getFret(19, "D","G","B","E", baseWidth),
         )
     }
 }
