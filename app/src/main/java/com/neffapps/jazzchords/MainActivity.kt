@@ -5,6 +5,7 @@ import android.os.Handler
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -91,29 +92,42 @@ fun Content(frets: List<Fret>, baseHeight: Float, viewModel: MainViewModel) {
 @Composable
 fun FretboardView(frets: List<Fret>, baseHeight: Float, viewModel: MainViewModel) {
     Row {
-        frets.forEach { fret ->
-            FretView(fret.notes, fret.width, baseHeight, viewModel)
+        frets.forEachIndexed { index, fret ->
+            FretView(index == 0, fret.notes, fret.width, baseHeight, viewModel)
         }
     }
 }
 
 @ExperimentalUnitApi
 @Composable
-fun FretView(stringNotes: List<Note>, width: Float, baseHeight: Float, viewModel: MainViewModel) {
+fun FretView(
+    openPosition: Boolean,
+    stringNotes: List<Note>,
+    width: Float,
+    baseHeight: Float,
+    viewModel: MainViewModel
+) {
     Column {
         for (note in stringNotes) {
-            FretStringView(note, width, baseHeight, viewModel)
+            FretStringView(openPosition, note, width, baseHeight, viewModel)
         }
     }
 }
 
 @ExperimentalUnitApi
 @Composable
-fun FretStringView(note: Note, width: Float, baseHeight: Float, viewModel: MainViewModel) {
+fun FretStringView(
+    openPosition: Boolean,
+    note: Note,
+    width: Float,
+    baseHeight: Float,
+    viewModel: MainViewModel
+) {
     val chordNotes: List<Note> by viewModel.currentChord.collectAsState()
-
+    val backgroundColor = if (openPosition) Color.White else Color.Black
     Box(
         modifier = Modifier
+            .background(backgroundColor)
             .width(Dp(width))
             .height(Dp(baseHeight))
     ) {
