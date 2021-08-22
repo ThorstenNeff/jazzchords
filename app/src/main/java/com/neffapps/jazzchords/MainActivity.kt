@@ -3,82 +3,86 @@ package com.neffapps.jazzchords
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Divider
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.ExperimentalUnitApi
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
+import com.neffapps.jazzchords.notes.Fret
+import com.neffapps.jazzchords.notes.Fretboard
+import com.neffapps.jazzchords.notes.Note
 import com.neffapps.jazzchords.ui.theme.JazzchordsTheme
 
 class MainActivity : ComponentActivity() {
+
+    private val allFrets = Fretboard.AllFrets
+
+    @ExperimentalUnitApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             JazzchordsTheme {
                 // A surface container using the 'background' color from the theme
-                Content()
+                Content(allFrets)
             }
         }
     }
 }
 
-data class Note(val fret: Int, val string: Int, val name: String, val pressed: Boolean = false)
-
-val notes = listOf<Note>(
-    Note(0,1,"A"),
-    Note(0,2,"E"),
-    Note(0,3,"C"),
-    Note(0,4,"G"),
-
-    Note(1,1,"Bb"),
-    Note(1,2,"F"),
-    Note(1,3,"C#"),
-    Note(1,4,"G#"),
-
-    Note(2,1,"B"),
-    Note(2,2,"F#"),
-    Note(2,3,"D"),
-    Note(2,4,"A"),
-)
-
+@ExperimentalUnitApi
 @Composable
-fun Content() {
+fun Content(frets: List<Fret>) {
     Surface(color = Color.Black) {
-        Fretboard()
+        FretboardView(frets)
     }
 }
 
+@ExperimentalUnitApi
 @Composable
-fun Fretboard() {
+fun FretboardView(frets: List<Fret>) {
+
     Row {
-        (0 until 3).asIterable().forEach { fret ->
-            Fret(notes.filter { note -> note.fret == fret }.toList())
+        frets.forEach { fret ->
+            FretView(fret.notes, fret.width)
         }
     }
 }
 
+@ExperimentalUnitApi
 @Composable
-fun Fret(stringNotes: List<Note>, baseWidth: Float = 40.0f) {
+fun FretView(stringNotes: List<Note>, width: Dp) {
     Column {
         for (note in stringNotes) {
-            FretString(note.name, baseWidth)
+            FretStringView(note, width)
         }
     }
 }
 
+@ExperimentalUnitApi
 @Composable
-fun FretString(text: String = "*", baseWidth:Float = 40.0f) {
+fun FretStringView(note: Note, width: Dp) {
     Box(
-        modifier = Modifier.width(Dp(baseWidth))
+        modifier = Modifier.width(width)
     ) {
-        Text(
-            text = text,
-            color = Color.LightGray,
-            modifier = Modifier.align(Alignment.Center)
-        )
+        if (note.textVisible) {
+            Text(
+                text = note.name,
+                fontSize = TextUnit(11.0f, TextUnitType.Sp),
+                color = Color.LightGray,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
         Divider(
             color = Color.LightGray,
             thickness = Dp(0.2f),
@@ -87,10 +91,11 @@ fun FretString(text: String = "*", baseWidth:Float = 40.0f) {
     }
 }
 
+@ExperimentalUnitApi
 @Preview
 @Composable
 fun PhotographerCardPreview() {
     JazzchordsTheme {
-        Content()
+        Content(Fretboard.AllFrets)
     }
 }
