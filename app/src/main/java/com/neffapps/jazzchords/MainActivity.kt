@@ -3,6 +3,7 @@ package com.neffapps.jazzchords
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
@@ -25,13 +26,15 @@ class MainActivity : ComponentActivity() {
 
     private val allFrets = Fretboard.AllFrets
 
+    private val mainViewModel by viewModels<MainViewModel>()
+
     @ExperimentalUnitApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             JazzchordsTheme {
                 // A surface container using the 'background' color from the theme
-                Content(allFrets)
+                Content(allFrets, mainViewModel)
             }
         }
     }
@@ -39,36 +42,36 @@ class MainActivity : ComponentActivity() {
 
 @ExperimentalUnitApi
 @Composable
-fun Content(frets: List<Fret>) {
+fun Content(frets: List<Fret>, viewModel: MainViewModel) {
+
     Surface(color = Color.Black) {
-        FretboardView(frets)
+        FretboardView(frets, viewModel)
     }
 }
 
 @ExperimentalUnitApi
 @Composable
-fun FretboardView(frets: List<Fret>) {
-
+fun FretboardView(frets: List<Fret>, viewModel: MainViewModel) {
     Row {
         frets.forEach { fret ->
-            FretView(fret.notes, fret.width)
+            FretView(fret.notes, fret.width, viewModel)
         }
     }
 }
 
 @ExperimentalUnitApi
 @Composable
-fun FretView(stringNotes: List<Note>, width: Float) {
+fun FretView(stringNotes: List<Note>, width: Float, viewModel: MainViewModel) {
     Column {
         for (note in stringNotes) {
-            FretStringView(note, width)
+            FretStringView(note, width, viewModel)
         }
     }
 }
 
 @ExperimentalUnitApi
 @Composable
-fun FretStringView(note: Note, width: Float) {
+fun FretStringView(note: Note, width: Float, viewModel: MainViewModel) {
     Box(
         modifier = Modifier.width(Dp(width)).height(Dp(20.0f))
     ) {
@@ -92,7 +95,8 @@ fun FretStringView(note: Note, width: Float) {
 @Preview
 @Composable
 fun PhotographerCardPreview() {
+    val mainViewModel = MainViewModel()
     JazzchordsTheme {
-        Content(Fretboard.AllFrets)
+        Content(Fretboard.AllFrets, mainViewModel)
     }
 }
