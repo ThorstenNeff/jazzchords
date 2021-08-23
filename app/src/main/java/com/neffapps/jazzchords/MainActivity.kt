@@ -2,6 +2,7 @@ package com.neffapps.jazzchords
 
 import android.os.Bundle
 import android.os.Handler
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -56,7 +57,7 @@ class MainActivity : ComponentActivity() {
             JazzchordsTheme(darkTheme = true) {
                 Box(
                     modifier = Modifier
-                        .background(Color.DarkGray)
+                        .background(com.neffapps.jazzchords.ui.theme.Anthrazit)
                         .fillMaxWidth()
                         .fillMaxHeight(),
                 ) {
@@ -84,9 +85,37 @@ class MainActivity : ComponentActivity() {
 @ExperimentalUnitApi
 @Composable
 fun Content(frets: List<Fret>, baseHeight: Float, viewModel: MainViewModel) {
+    val chord by viewModel.currentChord.collectAsState()
 
-    Surface(color = Color.Black) {
-        FretboardView(frets, baseHeight, viewModel)
+    Surface(color = com.neffapps.jazzchords.ui.theme.Anthrazit) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .height(Dp(70.0f))
+                    .fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        color = Color.White,
+                        text = chord.name
+                    )
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        color = Color.White,
+                        text = "${chord.shape} shape",
+                        fontSize = TextUnit(8.0f, TextUnitType.Sp),
+                    )
+                }
+            }
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                Surface(color = Color.Black) {
+                    FretboardView(frets, baseHeight, viewModel)
+                }
+            }
+        }
     }
 }
 
@@ -126,7 +155,9 @@ fun FretStringView(
     viewModel: MainViewModel
 ) {
     val chord by viewModel.currentChord.collectAsState()
-    val backgroundColor = if (openPosition) Color.DarkGray else Color.Black
+    val backgroundColor =
+        if (!openPosition) Color.Black
+        else com.neffapps.jazzchords.ui.theme.Anthrazit
     Box(
         modifier = Modifier
             .background(backgroundColor)
