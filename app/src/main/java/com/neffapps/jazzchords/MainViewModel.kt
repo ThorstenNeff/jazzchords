@@ -1,12 +1,14 @@
 package com.neffapps.jazzchords
 
 import androidx.lifecycle.ViewModel
+import com.neffapps.jazzchords.notes.Dominant7Chords
 import com.neffapps.jazzchords.notes.Minor7Chords
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainViewModel: ViewModel() {
 
-    var chords = Minor7Chords().getMinor7Chords()
+    private var chords = Dominant7Chords().getDominant7Chords()
+    // + Minor7Chords().getMinor7Chords()
 
     var currentChord = MutableStateFlow(chords[0])
         private set

@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
                         color = Color.Blue,
                     ) {
                         // A surface container using the 'background' color from the theme
-                        Content(allFrets, baseHeight, mainViewModel)
+                        Content(allFrets, baseWidth, baseHeight, mainViewModel)
                     }
                 }
 
@@ -84,14 +84,13 @@ class MainActivity : ComponentActivity() {
 
 @ExperimentalUnitApi
 @Composable
-fun Content(frets: List<Fret>, baseHeight: Float, viewModel: MainViewModel) {
+fun Content(frets: List<Fret>, baseWidth: Float, baseHeight: Float, viewModel: MainViewModel) {
     val chord by viewModel.currentChord.collectAsState()
 
     Surface(color = com.neffapps.jazzchords.ui.theme.Anthrazit) {
         Column {
             Row(
                 modifier = Modifier
-                    .height(Dp(70.0f))
                     .fillMaxWidth()
             ) {
                 Column(
@@ -100,16 +99,20 @@ fun Content(frets: List<Fret>, baseHeight: Float, viewModel: MainViewModel) {
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         color = Color.White,
-                        text = chord.name
+                        text = chord.name,
+                        fontSize = TextUnit(4.0f + baseWidth/2.0f, TextUnitType.Sp),
                     )
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         color = Color.White,
                         text = "${chord.shape} shape",
-                        fontSize = TextUnit(8.0f, TextUnitType.Sp),
+                        fontSize = TextUnit(4.0f + baseWidth/3.0f, TextUnitType.Sp),
                     )
                 }
             }
+            Row(
+                modifier = Modifier.height(Dp(70.0f))
+            ) {}
             Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 Surface(color = Color.Black) {
                     FretboardView(frets, baseHeight, viewModel)
@@ -197,6 +200,6 @@ fun FretStringView(
 fun PhotographerCardPreview() {
     val mainViewModel = MainViewModel()
     JazzchordsTheme {
-        Content(Fretboard.getAllFrets(20.0f), 20.0f, mainViewModel)
+        Content(Fretboard.getAllFrets(20.0f), 20.0f,20.0f, mainViewModel)
     }
 }
