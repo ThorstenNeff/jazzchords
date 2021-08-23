@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainViewModel: ViewModel() {
 
-    private var chords = Dominant7Chords().getDominant7Chords()
-    // + Minor7Chords().getMinor7Chords()
+    private var chords = Minor7Chords().getMinor7Chords() +
+            Dominant7Chords().getDominant7Chords()
 
     var currentChord = MutableStateFlow(chords[0])
         private set

@@ -57,12 +57,20 @@ class Minor7Chords {
         for (i in 0 until 20) {
             val j = i + 1
             val k = i + 2
+            val barredaNote = notes.find(i, 1)
+            val barredeNote = notes.find(i, 2)
+            val barredcNote = notes.find(i, 3)
             val aNote = notes.find(j, 1)
             val eNote = notes.find(j, 2)
             val cNote = notes.find(k, 3)
             val gNote = notes.find(i, 4)
-            if (aNote != null && eNote != null && cNote != null && gNote != null) {
-                val notes = listOf(aNote, eNote, cNote, gNote)
+            if (
+                aNote != null && eNote != null && cNote != null && gNote != null
+                && barredaNote != null && barredeNote != null && barredcNote != null
+            ) {
+                val notes = listOf(
+                    barredaNote, aNote, barredeNote, eNote, barredcNote, cNote, gNote
+                )
                 chordList.add(Chord(notes = notes, name = gNote.name + "m7", shape = "G"))
             }
         }
