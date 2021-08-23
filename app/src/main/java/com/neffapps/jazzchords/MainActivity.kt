@@ -125,7 +125,7 @@ fun FretStringView(
     baseHeight: Float,
     viewModel: MainViewModel
 ) {
-    val chordNotes: List<Note> by viewModel.currentChord.collectAsState()
+    val chord by viewModel.currentChord.collectAsState()
     val backgroundColor = if (openPosition) Color.DarkGray else Color.Black
     Box(
         modifier = Modifier
@@ -138,7 +138,7 @@ fun FretStringView(
             thickness = Dp( 1.0f),
             modifier = Modifier.align(Alignment.Center)
         )
-        if (note.noteInChord(chordNotes)) {
+        if (note.noteInChord(chord.notes)) {
             Surface(
                 modifier = Modifier
                     .size(Dp(baseHeight - 2.0f))

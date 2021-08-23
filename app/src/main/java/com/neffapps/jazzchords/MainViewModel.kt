@@ -1,7 +1,6 @@
 package com.neffapps.jazzchords
 
 import androidx.lifecycle.ViewModel
-import com.neffapps.jazzchords.notes.M7AShapeChords
 import com.neffapps.jazzchords.notes.Minor7Chords
 import kotlinx.coroutines.flow.MutableStateFlow
 
