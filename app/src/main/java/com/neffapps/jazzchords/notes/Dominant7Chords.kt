@@ -3,9 +3,11 @@ package com.neffapps.jazzchords.notes
 class Dominant7Chords {
     private val notes = Notes()
 
+    val maxFretNumber = 12
+
     private fun calculateCShapeDominant7Chords(): List<Chord> {
         val chordList = mutableListOf<Chord>()
-        for (i in 0 until 20) {
+        for (i in 0 until maxFretNumber) {
             val k = i +1
             val barredNote = notes.find(i, 1)
             val aNote = notes.find(k, 1)
@@ -24,7 +26,7 @@ class Dominant7Chords {
 
     private fun calculateAShapeDominant7Chords(): List<Chord> {
         val chordList = mutableListOf<Chord>()
-        for (i in 0 until 19) {
+        for (i in 0 until (maxFretNumber - 1)) {
             val k = i + 1
             val aNote = notes.find(i, 1)
             val eNote = notes.find(i, 2)
@@ -42,7 +44,7 @@ class Dominant7Chords {
 
     private fun calculateGShapeDominant7Chords(): List<Chord> {
         val chordList = mutableListOf<Chord>()
-        for (i in 0 until 18) {
+        for (i in 0 until (maxFretNumber -2)) {
             val j = i + 1
             val k = i + 2
             val aNote = notes.find(k, 1)
@@ -59,7 +61,7 @@ class Dominant7Chords {
 
     private fun calculateEShapeDominant7Chords(): List<Chord> {
         val chordList = mutableListOf<Chord>()
-        for (i in 0 until 18) {
+        for (i in 0 until (maxFretNumber - 2)) {
             val j = i + 1
             val k = i + 2
             val aNote = notes.find(k, 1)

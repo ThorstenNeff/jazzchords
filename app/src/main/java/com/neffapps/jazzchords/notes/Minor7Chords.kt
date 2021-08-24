@@ -3,10 +3,11 @@ package com.neffapps.jazzchords.notes
 class Minor7Chords {
 
     private val notes = Notes()
+    val maxFretNumber = 12
 
     private fun calculateAShapeMinor7Chords(): List<Chord> {
         val chordList = mutableListOf<Chord>()
-        for (i in 0 until 20) {
+        for (i in 0 until maxFretNumber) {
             val aNote = notes.find(i, 1)
             val eNote = notes.find(i, 2)
             val cNote = notes.find(i, 3)
@@ -21,7 +22,7 @@ class Minor7Chords {
 
     private fun calculateEShapeMinor7Chords(): List<Chord> {
         val chordList = mutableListOf<Chord>()
-        for (i in 2 until 20) {
+        for (i in 2 until maxFretNumber) {
             val j = i - 2
             val aNote = notes.find(i, 1)
             val eNote = notes.find(j, 2)
@@ -37,7 +38,7 @@ class Minor7Chords {
 
     private fun calculateCShapeMinor7Chords(): List<Chord> {
         val chordList = mutableListOf<Chord>()
-        for (i in 3 until 20) {
+        for (i in 3 until maxFretNumber) {
             val j = i - 2 // 0
             val k = i - 1 // 1
             val aNote = notes.find(i, 1)
@@ -54,7 +55,7 @@ class Minor7Chords {
 
     private fun calculateGShapeMinor7Chords(): List<Chord> {
         val chordList = mutableListOf<Chord>()
-        for (i in 0 until 20) {
+        for (i in 0 until maxFretNumber) {
             val j = i + 1
             val k = i + 2
             val barredaNote = notes.find(i, 1)

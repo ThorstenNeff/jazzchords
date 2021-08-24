@@ -2,13 +2,17 @@ package com.neffapps.jazzchords
 
 import androidx.lifecycle.ViewModel
 import com.neffapps.jazzchords.notes.Dominant7Chords
+import com.neffapps.jazzchords.notes.Major7Chords
 import com.neffapps.jazzchords.notes.Minor7Chords
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainViewModel: ViewModel() {
 
-    private var chords = Minor7Chords().getMinor7Chords() +
-            Dominant7Chords().getDominant7Chords()
+    // TODO: Add interval slider
+
+    private var chords = Major7Chords().getMajor7Chords()
+        // Minor7Chords().getMinor7Chords()
+    // Dominant7Chords().getDominant7Chords()
 
     var currentChord = MutableStateFlow(chords[0])
         private set

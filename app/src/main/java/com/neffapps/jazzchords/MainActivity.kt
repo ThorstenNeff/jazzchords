@@ -29,7 +29,7 @@ import com.neffapps.jazzchords.ui.theme.JazzchordsTheme
 
 class MainActivity : ComponentActivity() {
 
-    private val delay: Long = 8000
+    private val delay: Long = 10000
     private lateinit var allFrets: List<Fret>
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var handler: Handler
