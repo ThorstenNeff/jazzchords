@@ -18,10 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.ExperimentalUnitApi
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
+import androidx.compose.ui.unit.*
 import com.neffapps.jazzchords.notes.Fret
 import com.neffapps.jazzchords.notes.Fretboard
 import com.neffapps.jazzchords.notes.Note
@@ -59,23 +56,35 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             JazzchordsTheme(darkTheme = true) {
-                Box(
-                    modifier = Modifier
-                        .background(com.neffapps.jazzchords.ui.theme.Anthrazit)
-                        .fillMaxWidth()
-                        .fillMaxHeight(),
+
+                Row(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Surface(
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.Center),
-                            // .offset(x = Dp(-baseWidth), y = Dp(0.0f)),
-                        color = Color.Blue,
+                            .background(com.neffapps.jazzchords.ui.theme.Anthrazit)
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
                     ) {
-                        // A surface container using the 'background' color from the theme
-                        Content(allFrets, baseWidth, baseHeight, mainViewModel)
+                        Surface(
+                            modifier = Modifier
+                                .align(Alignment.Center),
+                            // .offset(x = Dp(-baseWidth), y = Dp(0.0f)),
+                            color = Color.Blue,
+                        ) {
+                            // A surface container using the 'background' color from the theme
+                            Content(allFrets, baseWidth, baseHeight, mainViewModel)
+                        }
                     }
                 }
 
+                Column {
+                    Text(text = "maj7", color = Color.White)
+                    Text(text = "7", color = Color.White)
+                    Text(text = "m7", color = Color.White)
+                    Text(text = "m7b5", color = Color.White)
+                    Text(text = "dim7", color = Color.White)
+                }
             }
         }
     }
