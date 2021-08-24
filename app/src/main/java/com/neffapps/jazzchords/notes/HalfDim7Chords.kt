@@ -16,7 +16,7 @@ class HalfDim7Chords {
             val gNote = notes.find(k, 4)
             if (aNote != null && eNote != null && cNote != null && gNote != null) {
                 val notes = listOf(aNote, eNote, cNote, gNote)
-                chordList.add(Chord(notes = notes, name = aNote.name + "m7b5", shape = "C"))
+                chordList.add(Chord(notes = notes, name = cNote.name + "m7b5", shape = "C"))
             }
         }
         return chordList
@@ -32,7 +32,7 @@ class HalfDim7Chords {
             val gNote = notes.find(i, 4)
             if (aNote != null && eNote != null && cNote != null && gNote != null) {
                 val notes = listOf(aNote, eNote, cNote, gNote)
-                chordList.add(Chord(notes = notes, name = cNote.name + "m7b5", shape = "A"))
+                chordList.add(Chord(notes = notes, name = aNote.name + "m7b5", shape = "A"))
             }
         }
         return chordList
