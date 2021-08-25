@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
@@ -19,9 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
-import com.neffapps.jazzchords.notes.Fret
-import com.neffapps.jazzchords.notes.Fretboard
-import com.neffapps.jazzchords.notes.Note
+import com.neffapps.jazzchords.notes.*
 import com.neffapps.jazzchords.ui.theme.JazzchordsTheme
 
 class MainActivity : ComponentActivity() {
@@ -79,11 +78,12 @@ class MainActivity : ComponentActivity() {
                 }
 
                 Column {
-                    Text(text = "maj7", color = Color.White)
-                    Text(text = "7", color = Color.White)
-                    Text(text = "m7", color = Color.White)
-                    Text(text = "m7b5", color = Color.White)
-                    Text(text = "dim7", color = Color.White)
+                    ChordFamilies.allFamilies.forEach {
+                        SelectableChordOption(
+                            viewModel = mainViewModel,
+                            it,
+                        )
+                    }
                 }
             }
         }
@@ -92,6 +92,29 @@ class MainActivity : ComponentActivity() {
     override fun onPostResume() {
         super.onPostResume()
         switchChords()
+    }
+}
+
+@ExperimentalUnitApi
+@Composable
+fun SelectableChordOption(
+    viewModel: MainViewModel,
+    chordFamily: ChordFamily,
+) {
+    val selected = viewModel.activatedChordFamilies[chordFamily.id]
+
+    Box(modifier = Modifier
+        .padding(top = 15.dp, start = 15.dp)
+        .clickable {
+            viewModel.toggleFamily(chordFamily)
+        }
+    ) {
+        Text(
+            text = chordFamily.title,
+            color = if (selected == true)
+                Color.Yellow
+            else Color.LightGray
+        )
     }
 }
 
