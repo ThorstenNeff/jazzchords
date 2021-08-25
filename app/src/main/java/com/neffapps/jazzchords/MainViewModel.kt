@@ -1,5 +1,6 @@
 package com.neffapps.jazzchords
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import com.neffapps.jazzchords.notes.*
@@ -9,7 +10,9 @@ class MainViewModel: ViewModel() {
 
     // TODO: Add interval slider
 
-    private var chords = Dominant7Chords().getDominant7Chords()
+    private var chords = mutableListOf<Chord>().also {
+        it.addAll(Dominant7Chords().getDominant7Chords())
+    }
 
     private val chordFamilies = ChordFamilies.allFamilies
 
@@ -20,8 +23,10 @@ class MainViewModel: ViewModel() {
         )
 
     fun switchChord() {
-        val currentChordIndex = rand(0, chords.size - 1)
-        currentChord.value = chords[currentChordIndex]
+        chords.let {
+            val currentChordIndex = rand(0, it.size - 1)
+            currentChord.value = it[currentChordIndex]
+        }
     }
 
     private fun rand(start: Int, end: Int): Int {
@@ -36,6 +41,17 @@ class MainViewModel: ViewModel() {
     }
 
     private fun updateChords() {
-
+        chords.clear()
+        activatedChordFamilies.filter {
+            it.value
+        }.map { it.key }.toList().forEach {  familyName ->
+            chordFamilies
+                .filter { familyName == it.id }
+                .toList()
+                .forEach {
+                    chords.addAll(it.chords)
+                }
+        }
+        Log.d("TEST", "updateChords ${chords.size}")
     }
 }

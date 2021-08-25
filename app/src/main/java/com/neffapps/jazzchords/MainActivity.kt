@@ -112,8 +112,8 @@ fun SelectableChordOption(
         Text(
             text = chordFamily.title,
             color = if (selected == true)
-                Color.Yellow
-            else Color.LightGray
+                Color.Yellow.copy(alpha = 0.6f)
+            else Color.LightGray.copy(alpha = 0.3f)
         )
     }
 }
