@@ -2,9 +2,12 @@ package com.neffapps.jazzchords
 
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
+import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,20 +15,29 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import com.neffapps.jazzchords.notes.*
 import com.neffapps.jazzchords.ui.theme.JazzchordsTheme
+import kotlin.math.PI
+import kotlin.math.atan2
 
+@ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
 
-    private val delay: Long = 10000
+    private var delay: Long = 12000
+    private val delays = listOf<Long>(12000, 10000, 8000, 6000, 4000, 3000, 2000, 1000, 500, 250)
+
     private lateinit var allFrets: List<Fret>
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var handler: Handler
@@ -54,6 +66,11 @@ class MainActivity : ComponentActivity() {
         allFrets = Fretboard.getAllFrets(baseWidth)
 
         setContent {
+
+            var speed by remember {
+                mutableStateOf(delay)
+            }
+
             JazzchordsTheme(darkTheme = true) {
 
                 Row(
@@ -81,17 +98,50 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Box(
-                        modifier = Modifier.align(Alignment.End).padding(top = 15.dp)
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(top = 15.dp)
                     ) {
-                        Column {
-                            ChordFamilies.allFamilies.forEach {
-                                SelectableChordOption(
-                                    viewModel = mainViewModel,
-                                    it,
-                                )
+                        Row() {
+                            Column(modifier = Modifier.fillMaxHeight()) {
+                                MusicKnob(
+                                    modifier = Modifier
+                                        .width(70.dp)
+                                        .height(70.dp)
+                                        .padding(top = 20.dp)
+                                ) {
+                                    val index = (it * 10.0f).toInt()
+                                    delay = delays[index]
+                                    speed = delay
+                                    handler.removeCallbacks(switchChordsRunnable)
+                                    handler.postDelayed(switchChordsRunnable, delay)
+                                }
+                            }
+
+                            Column {
+                                Box(modifier = Modifier
+                                    .padding(top = 15.dp, end = 80.dp)
+
+                                ) {
+                                    Text(
+                                        modifier = Modifier.width(50.dp),
+                                        text = "${speed.toFloat() / 1000.0f}s",
+                                        color = Color.Yellow.copy(alpha = 0.6f)
+                                    )
+                                }
+                            }
+
+                            Column {
+                                ChordFamilies.allFamilies.forEach {
+                                    SelectableChordOption(
+                                        viewModel = mainViewModel,
+                                        it,
+                                    )
+                                }
                             }
                         }
                     }
+
                 }
             }
         }
@@ -124,6 +174,67 @@ fun SelectableChordOption(
             else Color.LightGray.copy(alpha = 0.3f)
         )
     }
+}
+
+@ExperimentalComposeUiApi
+@Composable
+fun MusicKnob(
+    modifier: Modifier = Modifier,
+    limitingAngle: Float = 25f,
+    onValueChange: (Float) -> Unit
+) {
+    var rotation by remember {
+        mutableStateOf(limitingAngle)
+    }
+    var touchX by remember {
+        mutableStateOf(0f)
+    }
+    var touchY by remember {
+        mutableStateOf(0f)
+    }
+    var centerX by remember {
+        mutableStateOf(0f)
+    }
+    var centerY by remember {
+        mutableStateOf(0f)
+    }
+
+    Image(
+        painter = painterResource(id = R.drawable.ic_knob),
+        contentDescription = "Music knob",
+        modifier = modifier
+            .fillMaxSize()
+            .onGloballyPositioned {
+                val windowBounds = it.boundsInWindow()
+                centerX = windowBounds.size.width / 2f
+                centerY = windowBounds.size.height / 2f
+            }
+            .pointerInteropFilter { event ->
+                touchX = event.x
+                touchY = event.y
+                val angle = -atan2(centerX - touchX, centerY - touchY) * (180f / PI).toFloat()
+
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN,
+                    MotionEvent.ACTION_MOVE -> {
+                        if (angle !in -limitingAngle..limitingAngle) {
+                            val fixedAngle = if (angle in -180f..-limitingAngle) {
+                                360f + angle
+                            } else {
+                                angle
+                            }
+                            rotation = fixedAngle
+
+                            val percent = (fixedAngle - limitingAngle) / (360f - 2 * limitingAngle)
+                            onValueChange(percent)
+                            true
+                        } else false
+                    }
+                    else -> false
+                }
+            }
+            .rotate(rotation)
+    )
 }
 
 @ExperimentalUnitApi
