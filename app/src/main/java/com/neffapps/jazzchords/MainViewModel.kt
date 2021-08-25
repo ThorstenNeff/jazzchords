@@ -25,12 +25,14 @@ class MainViewModel: ViewModel() {
     fun switchChord() {
         chords.let {
             val currentChordIndex = rand(0, it.size - 1)
-            currentChord.value = it[currentChordIndex]
+            if (currentChordIndex > -1) {
+                currentChord.value = it[currentChordIndex]
+            }
         }
     }
 
     private fun rand(start: Int, end: Int): Int {
-        require(start <= end) { "Illegal Argument" }
+        if (start > end) return -1
         return (Math.random() * (end - start + 1)).toInt() + start
     }
 

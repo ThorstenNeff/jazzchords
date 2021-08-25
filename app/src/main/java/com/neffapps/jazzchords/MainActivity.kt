@@ -77,12 +77,20 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                Column {
-                    ChordFamilies.allFamilies.forEach {
-                        SelectableChordOption(
-                            viewModel = mainViewModel,
-                            it,
-                        )
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier.align(Alignment.End).padding(top = 15.dp)
+                    ) {
+                        Column {
+                            ChordFamilies.allFamilies.forEach {
+                                SelectableChordOption(
+                                    viewModel = mainViewModel,
+                                    it,
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -104,7 +112,7 @@ fun SelectableChordOption(
     val selected = viewModel.activatedChordFamilies[chordFamily.id]
 
     Box(modifier = Modifier
-        .padding(top = 15.dp, start = 15.dp)
+        .padding(top = 15.dp, start = 30.dp, end = 80.dp)
         .clickable {
             viewModel.toggleFamily(chordFamily)
         }
