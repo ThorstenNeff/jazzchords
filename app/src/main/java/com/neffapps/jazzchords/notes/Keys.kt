@@ -8,17 +8,40 @@ class Keys {
 
     val emptyChord = Chord(name = "Empty", flatName = "", listOf(), "")
 
-    fun getMaj7Chord(name: String) =
-        major7Chords.find { it.name == name || it.flatName == name } ?: emptyChord
+    fun getMaj7Chord(name: String): Chord {
+        val chord = major7Chords.find { it.name == name || it.flatName == name } ?: emptyChord
+        chord.halfNoteType = getHalfNoteType(name)
+        return chord
+    }
 
-    fun getMin7Chord(name: String) =
-        minor7Chords.find { it.name == name || it.flatName == name  } ?: emptyChord
+    fun getMin7Chord(name: String): Chord {
+        val chord = minor7Chords.find { it.name == name || it.flatName == name } ?: emptyChord
+        chord.halfNoteType = getHalfNoteType(name)
+        return chord
+    }
 
-    fun getDom7Chord(name: String) =
-        dominant7Chords.find { it.name == name || it.flatName == name  } ?: emptyChord
+    fun getDom7Chord(name: String): Chord {
+        val chord = dominant7Chords.find { it.name == name || it.flatName == name } ?: emptyChord
+        chord.halfNoteType = getHalfNoteType(name)
+        return chord
+    }
 
-    fun getHalfDim7Chords(name: String) =
-        halfDim7Chords.find { it.name == name || it.flatName == name  } ?: emptyChord
+    fun getHalfDim7Chords(name: String): Chord {
+        val chord = halfDim7Chords.find { it.name == name || it.flatName == name } ?: emptyChord
+        chord.halfNoteType = getHalfNoteType(name)
+        return chord
+    }
+
+    private fun getHalfNoteType(name: String): HalfNoteType {
+        val plainName = name.replace("b5","")
+        return if ("b" in plainName) {
+            HalfNoteType.FLAT
+        } else if ("#" in plainName) {
+            HalfNoteType.SHARP
+        } else {
+            HalfNoteType.NONE
+        }
+    }
 
     val Cmaj7 = Key(
         name = "Cmaj7",
@@ -172,5 +195,9 @@ class Keys {
             getHalfDim7Chords("Cm7b5"),
         ),
         halfNoteType = HalfNoteType.FLAT
+    )
+
+    fun getMajor7Keys() = listOf(
+        Cmaj7, Gmaj7, Dmaj7, Amaj7, Emaj7, Bmaj7, Fmaj7, Bbmaj7, Ebmaj7, Abmaj7, Dbmaj7
     )
 }

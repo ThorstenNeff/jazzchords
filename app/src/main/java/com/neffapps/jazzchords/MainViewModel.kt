@@ -8,8 +8,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainViewModel: ViewModel() {
 
-    // TODO: Add interval slider
-
     private var chords = mutableListOf<Chord>().also {
         it.addAll(Dominant7Chords().getDominant7Chords())
     }
@@ -18,15 +16,23 @@ class MainViewModel: ViewModel() {
 
     val currentChord = MutableStateFlow(chords[0])
 
+    val activated251Key = MutableStateFlow<Key?>(null)
+    var current251Index = 0
+
     val activatedChordFamilies = mutableStateMapOf(
             Pair(chordFamilies[0].id, true)
         )
 
     fun switchChord() {
         chords.let {
-            val currentChordIndex = rand(0, it.size - 1)
-            if (currentChordIndex > -1) {
-                currentChord.value = it[currentChordIndex]
+            activated251Key.value?.let {
+                current251Index++
+                if (current251Index > chords.size) current251Index = 0
+            } ?: run {
+                val currentChordIndex = rand(0, it.size - 1)
+                if (currentChordIndex > -1) {
+                    currentChord.value = it[currentChordIndex]
+                }
             }
         }
     }
@@ -37,23 +43,43 @@ class MainViewModel: ViewModel() {
     }
 
     fun toggleFamily(chordType: ChordType) {
+        // Deactivate key, if activated
+        activated251Key.value = null
+
         val flag: Boolean = activatedChordFamilies[chordType.id] ?: false
         activatedChordFamilies[chordType.id] = !flag
         updateChords()
     }
 
+    fun toggle251Key(key: Key) {
+        // Deactivate all families
+        activatedChordFamilies.keys.forEach {
+            activatedChordFamilies[it] = false
+        }
+        // Activate key
+        activated251Key.value = key
+        updateChords()
+    }
+
     private fun updateChords() {
         chords.clear()
-        activatedChordFamilies.filter {
-            it.value
-        }.map { it.key }.toList().forEach {  familyName ->
-            chordFamilies
-                .filter { familyName == it.id }
-                .toList()
-                .forEach {
-                    chords.addAll(it.chords)
-                }
+
+        activated251Key.value?.let {
+            chords.add(it.chords[1])
+            chords.add(it.chords[4])
+            chords.add(it.chords[0])
+        } ?: run {
+            activatedChordFamilies.filter {
+                it.value
+            }.map { it.key }.toList().forEach {  familyName ->
+                chordFamilies
+                    .filter { familyName == it.id }
+                    .toList()
+                    .forEach {
+                        chords.addAll(it.chords)
+                    }
+            }
+            Log.d("TEST", "updateChords ${chords.size}")
         }
-        Log.d("TEST", "updateChords ${chords.size}")
     }
 }

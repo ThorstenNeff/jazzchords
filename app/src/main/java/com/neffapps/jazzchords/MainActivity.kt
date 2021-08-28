@@ -32,6 +32,7 @@ import kotlin.math.PI
 import kotlin.math.atan2
 
 @ExperimentalComposeUiApi
+@ExperimentalUnitApi
 class MainActivity : ComponentActivity() {
 
     private var delay: Long = 12000
@@ -40,6 +41,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var allFrets: List<Fret>
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var handler: Handler
+
+    private val keys = Keys()
 
     private val switchChordsRunnable = Runnable {
         switchChords()
@@ -52,7 +55,6 @@ class MainActivity : ComponentActivity() {
         handler.postDelayed(switchChordsRunnable, delay)
     }
 
-    @ExperimentalUnitApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handler = Handler(mainLooper)
@@ -131,6 +133,15 @@ class MainActivity : ComponentActivity() {
                             }
 
                             Column {
+                                keys.getMajor7Keys().forEach {
+                                    Selectable251Option(
+                                        viewModel = mainViewModel,
+                                        it,
+                                    )
+                                }
+                            }
+
+                            Column {
                                 ChordTypes.allFamilies.forEach {
                                     SelectableChordOption(
                                         viewModel = mainViewModel,
@@ -169,6 +180,29 @@ fun SelectableChordOption(
         Text(
             text = chordType.title,
             color = if (selected == true)
+                Color.Yellow.copy(alpha = 0.6f)
+            else Color.LightGray.copy(alpha = 0.3f)
+        )
+    }
+}
+
+@ExperimentalUnitApi
+@Composable
+fun Selectable251Option(
+    viewModel: MainViewModel,
+    key: Key,
+) {
+    val selected = viewModel.activated251Key
+
+    Box(modifier = Modifier
+        .padding(top = 15.dp, start = 30.dp, end = 80.dp)
+        .clickable {
+            viewModel.toggle251Key(key)
+        }
+    ) {
+        Text(
+            text = key.name,
+            color = if (selected.value?.name == key.name)
                 Color.Yellow.copy(alpha = 0.6f)
             else Color.LightGray.copy(alpha = 0.3f)
         )
@@ -253,7 +287,11 @@ fun Content(frets: List<Fret>, baseWidth: Float, baseHeight: Float, viewModel: M
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         color = Color.White,
-                        text = chord.name,
+                        text = if (chord.halfNoteType == HalfNoteType.FLAT) {
+                            chord.flatName
+                        } else {
+                            chord.name
+                        },
                         fontSize = TextUnit(4.0f + baseWidth/2.0f, TextUnitType.Sp),
                     )
                     Text(
@@ -339,7 +377,11 @@ fun FretStringView(
         }
         if (note.textVisible) {
             Text(
-                text = note.name,
+                text = if (chord.halfNoteType == HalfNoteType.FLAT) {
+                    note.flatName
+                } else {
+                    note.name
+                },
                 fontSize = TextUnit(4.0f + width/4.0f, TextUnitType.Sp),
                 color = Color.LightGray,
                 modifier = Modifier.align(Alignment.Center)

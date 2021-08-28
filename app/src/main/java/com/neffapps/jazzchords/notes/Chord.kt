@@ -5,5 +5,5 @@ data class Chord (
     val flatName: String = "",
     val notes: List<Note>,
     val shape: String,
-    val halfNoteType: HalfNoteType = HalfNoteType.SHARP,
+    var halfNoteType: HalfNoteType = HalfNoteType.SHARP,
 )
