@@ -200,4 +200,8 @@ class Keys {
     fun getMajor7Keys() = listOf(
         Cmaj7, Gmaj7, Dmaj7, Amaj7, Emaj7, Bmaj7, Fmaj7, Bbmaj7, Ebmaj7, Abmaj7, Dbmaj7
     )
+
+    fun getMostCommon251Keys() = listOf(
+        Cmaj7, Dmaj7, Fmaj7, Gmaj7, Bbmaj7,
+    )
 }

@@ -133,7 +133,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             Column {
-                                keys.getMajor7Keys().forEach {
+                                keys.getMostCommon251Keys().forEach {
                                     Selectable251Option(
                                         viewModel = mainViewModel,
                                         it,
@@ -192,7 +192,7 @@ fun Selectable251Option(
     viewModel: MainViewModel,
     key: Key,
 ) {
-    val selected = viewModel.activated251Key
+    val selected = viewModel.activated251Key.collectAsState()
 
     Box(modifier = Modifier
         .padding(top = 15.dp, start = 30.dp, end = 80.dp)

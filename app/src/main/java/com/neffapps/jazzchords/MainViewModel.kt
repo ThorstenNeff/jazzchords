@@ -24,11 +24,14 @@ class MainViewModel: ViewModel() {
         )
 
     fun switchChord() {
-        chords.let {
-            activated251Key.value?.let {
-                current251Index++
-                if (current251Index > chords.size) current251Index = 0
-            } ?: run {
+        activated251Key.value?.let {
+            current251Index++
+            if (current251Index > chords.size) current251Index = 0
+            if (current251Index > -1 && current251Index < chords.size) {
+                currentChord.value = it.chords[current251Index]
+            }
+        } ?: run {
+            chords.let {
                 val currentChordIndex = rand(0, it.size - 1)
                 if (currentChordIndex > -1) {
                     currentChord.value = it[currentChordIndex]
