@@ -14,7 +14,11 @@ class Minor7Chords {
             val gNote = notes.find(i, 4)
             if (aNote != null && eNote != null && cNote != null && gNote != null) {
                 val notes = listOf(aNote, eNote, cNote, gNote)
-                chordList.add(Chord(notes = notes, name = aNote.name + "m7", shape = "A"))
+                chordList.add(Chord(
+                    notes = notes,
+                    name = aNote.name + "m7",
+                    flatName = aNote.flatName + "m7",
+                    shape = "A"))
             }
         }
         return chordList
@@ -30,7 +34,11 @@ class Minor7Chords {
             val gNote = notes.find(j, 4)
             if (aNote != null && eNote != null && cNote != null && gNote != null) {
                 val notes = listOf(aNote, eNote, cNote, gNote)
-                chordList.add(Chord(notes = notes, name = eNote.name + "m7", shape = "E"))
+                chordList.add(Chord(
+                    notes = notes,
+                    name = eNote.name + "m7",
+                    flatName = eNote.flatName + "m7",
+                    shape = "E"))
             }
         }
         return chordList
@@ -47,7 +55,11 @@ class Minor7Chords {
             val gNote = notes.find(k, 4)
             if (aNote != null && eNote != null && cNote != null && gNote != null) {
                 val notes = listOf(aNote, eNote, cNote, gNote)
-                chordList.add(Chord(notes = notes, name = cNote.name + "m7", shape = "C"))
+                chordList.add(Chord(
+                    notes = notes,
+                    name = cNote.name + "m7",
+                    flatName = cNote.flatName + "m7",
+                    shape = "C"))
             }
         }
         return chordList
@@ -72,7 +84,11 @@ class Minor7Chords {
                 val notes = listOf(
                     barredaNote, aNote, barredeNote, eNote, barredcNote, cNote, gNote
                 )
-                chordList.add(Chord(notes = notes, name = gNote.name + "m7", shape = "G"))
+                chordList.add(Chord(
+                    notes = notes,
+                    name = gNote.name + "m7",
+                    flatName = gNote.flatName + "m7",
+                    shape = "G"))
             }
         }
         return chordList
