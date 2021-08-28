@@ -35,7 +35,7 @@ import kotlin.math.atan2
 @ExperimentalUnitApi
 class MainActivity : ComponentActivity() {
 
-    private var delay: Long = 12000
+    private var delay: Long = 6000
     private val delays = listOf<Long>(12000, 10000, 8000, 6000, 4000, 3000, 2000, 1000, 500, 250)
 
     private lateinit var allFrets: List<Fret>
@@ -159,7 +159,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onPostResume() {
         super.onPostResume()
-        switchChords()
+        handler.postDelayed(switchChordsRunnable, delay)
     }
 }
 
@@ -217,7 +217,7 @@ fun MusicKnob(
     onValueChange: (Float) -> Unit
 ) {
     var rotation by remember {
-        mutableStateOf(limitingAngle)
+        mutableStateOf(179f)
     }
     var touchX by remember {
         mutableStateOf(0f)

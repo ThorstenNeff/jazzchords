@@ -9,18 +9,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class MainViewModel: ViewModel() {
 
     private var chords = mutableListOf<Chord>().also {
-        it.addAll(Dominant7Chords().getDominant7Chords())
+        it.addAll(Progressions().Ascending251Cmaj7.chords)
     }
 
     private val chordFamilies = ChordTypes.allFamilies
 
     val currentChord = MutableStateFlow(chords[0])
 
-    val activated251Key = MutableStateFlow<Key?>(null)
+    val activated251Key = MutableStateFlow<Key?>(Progressions().Ascending251Cmaj7)
     var current251Index = 0
 
     val activatedChordFamilies = mutableStateMapOf(
-            Pair(chordFamilies[0].id, true)
+            Pair(chordFamilies[0].id, false)
         )
 
     fun switchChord() {
