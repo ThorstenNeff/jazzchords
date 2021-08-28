@@ -350,6 +350,7 @@ fun FretStringView(
     viewModel: MainViewModel
 ) {
     val chord by viewModel.currentChord.collectAsState()
+    val key by viewModel.activated251Key.collectAsState()
     val backgroundColor =
         if (!openPosition) Color.Black
         else com.neffapps.jazzchords.ui.theme.Anthrazit
@@ -377,7 +378,7 @@ fun FretStringView(
         }
         if (note.textVisible) {
             Text(
-                text = if (chord.halfNoteType == HalfNoteType.FLAT) {
+                text = if (key?.halfNoteType == HalfNoteType.FLAT) {
                     note.flatName
                 } else {
                     note.name
