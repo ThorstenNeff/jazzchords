@@ -4,6 +4,7 @@ data class Note(
     val fret: Int,
     val string: Int,
     val name: String,
+    val flatName: String = "",
     val textVisible: Boolean = true,
     val pressed: Boolean = false,
 ) {

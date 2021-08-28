@@ -14,7 +14,7 @@ class MainViewModel: ViewModel() {
         it.addAll(Dominant7Chords().getDominant7Chords())
     }
 
-    private val chordFamilies = ChordFamilies.allFamilies
+    private val chordFamilies = ChordTypes.allFamilies
 
     val currentChord = MutableStateFlow(chords[0])
 
@@ -36,9 +36,9 @@ class MainViewModel: ViewModel() {
         return (Math.random() * (end - start + 1)).toInt() + start
     }
 
-    fun toggleFamily(chordFamily: ChordFamily) {
-        val flag: Boolean = activatedChordFamilies[chordFamily.id] ?: false
-        activatedChordFamilies[chordFamily.id] = !flag
+    fun toggleFamily(chordType: ChordType) {
+        val flag: Boolean = activatedChordFamilies[chordType.id] ?: false
+        activatedChordFamilies[chordType.id] = !flag
         updateChords()
     }
 

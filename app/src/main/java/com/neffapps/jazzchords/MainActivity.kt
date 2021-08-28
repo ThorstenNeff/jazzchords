@@ -2,7 +2,6 @@ package com.neffapps.jazzchords
 
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -132,7 +131,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             Column {
-                                ChordFamilies.allFamilies.forEach {
+                                ChordTypes.allFamilies.forEach {
                                     SelectableChordOption(
                                         viewModel = mainViewModel,
                                         it,
@@ -157,18 +156,18 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun SelectableChordOption(
     viewModel: MainViewModel,
-    chordFamily: ChordFamily,
+    chordType: ChordType,
 ) {
-    val selected = viewModel.activatedChordFamilies[chordFamily.id]
+    val selected = viewModel.activatedChordFamilies[chordType.id]
 
     Box(modifier = Modifier
         .padding(top = 15.dp, start = 30.dp, end = 80.dp)
         .clickable {
-            viewModel.toggleFamily(chordFamily)
+            viewModel.toggleFamily(chordType)
         }
     ) {
         Text(
-            text = chordFamily.title,
+            text = chordType.title,
             color = if (selected == true)
                 Color.Yellow.copy(alpha = 0.6f)
             else Color.LightGray.copy(alpha = 0.3f)
