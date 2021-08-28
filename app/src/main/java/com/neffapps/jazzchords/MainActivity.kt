@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var handler: Handler
 
-    private val keys = Keys()
+    private val progressions = Progressions()
 
     private val switchChordsRunnable = Runnable {
         switchChords()
@@ -133,7 +133,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             Column {
-                                keys.getMostCommon251Keys().forEach {
+                                progressions.getMostCommon251Keys().forEach {
                                     Selectable251Option(
                                         viewModel = mainViewModel,
                                         it,

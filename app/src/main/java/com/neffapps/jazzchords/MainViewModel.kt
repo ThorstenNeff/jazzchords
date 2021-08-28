@@ -68,9 +68,7 @@ class MainViewModel: ViewModel() {
         chords.clear()
 
         activated251Key.value?.let {
-            chords.add(it.chords[1])
-            chords.add(it.chords[4])
-            chords.add(it.chords[0])
+            chords.addAll(it.chords)
         } ?: run {
             activatedChordFamilies.filter {
                 it.value
