@@ -8,27 +8,43 @@ class Keys {
 
     val emptyChord = Chord(name = "Empty", flatName = "", listOf(), "")
 
-    fun getMaj7Chord(name: String): Chord {
-        val chord = major7Chords.find { it.name == name || it.flatName == name } ?: emptyChord
+    fun getMaj7Chord(name: String, index:Int = 0): Chord {
+        val chord = getChordWithIndex(name, index, major7Chords)
         chord.halfNoteType = getHalfNoteType(name)
         return chord
     }
 
-    fun getMin7Chord(name: String): Chord {
-        val chord = minor7Chords.find { it.name == name || it.flatName == name } ?: emptyChord
+    fun getMin7Chord(name: String, index:Int = 0): Chord {
+        val chord = getChordWithIndex(name, index, minor7Chords)
         chord.halfNoteType = getHalfNoteType(name)
         return chord
     }
 
-    fun getDom7Chord(name: String): Chord {
-        val chord = dominant7Chords.find { it.name == name || it.flatName == name } ?: emptyChord
+    fun getDom7Chord(name: String, index:Int = 0): Chord {
+        val chord = getChordWithIndex(name, index, dominant7Chords)
         chord.halfNoteType = getHalfNoteType(name)
         return chord
     }
 
-    fun getHalfDim7Chords(name: String): Chord {
-        val chord = halfDim7Chords.find { it.name == name || it.flatName == name } ?: emptyChord
+    fun getHalfDim7Chord(name: String, index:Int = 0): Chord {
+        val chord = getChordWithIndex(name, index, halfDim7Chords)
         chord.halfNoteType = getHalfNoteType(name)
+        return chord
+    }
+
+    private fun getChordWithIndex(name: String, index: Int, chords: List<Chord>): Chord {
+        var chord = emptyChord
+        val list = mutableListOf<Chord>()
+        for (c in chords) {
+            if (c.name == name || c.flatName == name) {
+                list.add(c)
+            }
+        }
+        list.sortBy { it.notes.sumOf { it.fret } }
+
+        if (index < list.size) {
+            chord = list[index]
+        }
         return chord
     }
 
@@ -52,7 +68,7 @@ class Keys {
             getMaj7Chord("Fmaj7"),
             getDom7Chord("G7"),
             getDom7Chord("Am7"),
-            getHalfDim7Chords("Bm7b5"),
+            getHalfDim7Chord("Bm7b5"),
         ),
         halfNoteType = HalfNoteType.NONE
     )
@@ -66,7 +82,7 @@ class Keys {
             getMaj7Chord("Cmaj7"),
             getDom7Chord("D7"),
             getDom7Chord("Em7"),
-            getHalfDim7Chords("F#7b5"),
+            getHalfDim7Chord("F#7b5"),
         ),
         halfNoteType = HalfNoteType.SHARP
     )
@@ -80,7 +96,7 @@ class Keys {
             getMaj7Chord("Gmaj7"),
             getDom7Chord("A7"),
             getDom7Chord("Bm7"),
-            getHalfDim7Chords("C#7b5"),
+            getHalfDim7Chord("C#7b5"),
         ),
         halfNoteType = HalfNoteType.SHARP
     )
@@ -94,7 +110,7 @@ class Keys {
             getMaj7Chord("Dmaj7"),
             getDom7Chord("E7"),
             getDom7Chord("F#m7"),
-            getHalfDim7Chords("G#7b5"),
+            getHalfDim7Chord("G#7b5"),
         ),
         halfNoteType = HalfNoteType.SHARP
     )
@@ -108,7 +124,7 @@ class Keys {
             getMaj7Chord("Amaj7"),
             getDom7Chord("B7"),
             getDom7Chord("C#m7"),
-            getHalfDim7Chords("D#7b5"),
+            getHalfDim7Chord("D#7b5"),
         ),
         halfNoteType = HalfNoteType.SHARP
     )
@@ -122,7 +138,7 @@ class Keys {
             getMaj7Chord("Emaj7"),
             getDom7Chord("F#7"),
             getDom7Chord("G#m7"),
-            getHalfDim7Chords("A#7b5"),
+            getHalfDim7Chord("A#7b5"),
         ),
         halfNoteType = HalfNoteType.SHARP
     )
@@ -136,7 +152,7 @@ class Keys {
             getMaj7Chord("Bbmaj7"),
             getDom7Chord("C7"),
             getDom7Chord("Dm7"),
-            getHalfDim7Chords("Em7b5"),
+            getHalfDim7Chord("Em7b5"),
         ),
         halfNoteType = HalfNoteType.FLAT
     )
@@ -150,7 +166,7 @@ class Keys {
             getMaj7Chord("Ebmaj7"),
             getDom7Chord("F7"),
             getDom7Chord("Gm7"),
-            getHalfDim7Chords("Am7b5"),
+            getHalfDim7Chord("Am7b5"),
         ),
         halfNoteType = HalfNoteType.FLAT
     )
@@ -164,7 +180,7 @@ class Keys {
             getMaj7Chord("Abmaj7"),
             getDom7Chord("Bb7"),
             getDom7Chord("Cm7"),
-            getHalfDim7Chords("Dm7b5"),
+            getHalfDim7Chord("Dm7b5"),
         ),
         halfNoteType = HalfNoteType.FLAT
     )
@@ -178,7 +194,7 @@ class Keys {
             getMaj7Chord("Dbmaj7"),
             getDom7Chord("Eb7"),
             getDom7Chord("Fm7"),
-            getHalfDim7Chords("Gm7b5"),
+            getHalfDim7Chord("Gm7b5"),
         ),
         halfNoteType = HalfNoteType.FLAT
     )
@@ -192,7 +208,7 @@ class Keys {
             getMaj7Chord("Gbmaj7"),
             getDom7Chord("Ab7"),
             getDom7Chord("Bm7"),
-            getHalfDim7Chords("Cm7b5"),
+            getHalfDim7Chord("Cm7b5"),
         ),
         halfNoteType = HalfNoteType.FLAT
     )
