@@ -201,7 +201,7 @@ fun Selectable251Option(
         }
     ) {
         Text(
-            text = key.name,
+            text = "2-5-1 in " + key.name,
             color = if (selected.value?.name == key.name)
                 Color.Yellow.copy(alpha = 0.6f)
             else Color.LightGray.copy(alpha = 0.3f)
