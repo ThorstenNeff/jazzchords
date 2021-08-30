@@ -336,6 +336,39 @@ fun FretView(
     Column {
         for (note in stringNotes) {
             FretStringView(openPosition, note, width, baseHeight, viewModel)
+
+//            val backgroundColor =
+//                if (!openPosition) Color.Black
+//                else com.neffapps.jazzchords.ui.theme.Anthrazit
+            if (note.string == 4) {
+                Box (
+                    modifier = Modifier
+                        .background(com.neffapps.jazzchords.ui.theme.Anthrazit)
+                        .width(Dp(width))
+                        .height(Dp(12f))
+                ){
+                    if (
+                        note.fret == 5
+                        || note.fret == 7
+                        || note.fret == 10
+                        || note.fret == 12
+                    )
+                    {
+                        // Draw white dot
+                        Surface(
+                            modifier = Modifier
+                                .padding(top = Dp(7f))
+                                .size(Dp(5.0f))
+                                .align(Alignment.Center),
+                            shape = CircleShape,
+                            color = Color.LightGray
+                        ) {
+                            // No content here
+                        }
+                    }
+                }
+            }
+
         }
     }
 }
