@@ -3,8 +3,14 @@ package com.neffapps.jazzchords
 import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.neffapps.jazzchords.notes.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 class MainViewModel: ViewModel() {
 
@@ -16,12 +22,15 @@ class MainViewModel: ViewModel() {
 
     val currentChord = MutableStateFlow(chords[0])
 
+    val events = MutableStateFlow<MainEvent?>(null)
+
     val activated251Key = MutableStateFlow<Key?>(Progressions().Ascending251Cmaj7)
     var current251Index = 0
 
     val activatedChordFamilies = mutableStateMapOf(
             Pair(chordFamilies[0].id, false)
         )
+
 
     fun switchChord() {
         activated251Key.value?.let {
@@ -83,4 +92,19 @@ class MainViewModel: ViewModel() {
             Log.d("TEST", "updateChords ${chords.size}")
         }
     }
+
+    fun reset251() {
+        activated251Key.value?.let {
+            current251Index = -1
+            currentChord.value = Chord("","", listOf(), "")
+            viewModelScope.launch {
+                events.emit(MainEvent.Rewind)
+            }
+        }
+
+    }
+}
+
+sealed class MainEvent {
+    object Rewind: MainEvent()
 }

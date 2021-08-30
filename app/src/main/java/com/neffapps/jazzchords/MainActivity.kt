@@ -20,14 +20,18 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
+import androidx.lifecycle.lifecycleScope
 import com.neffapps.jazzchords.notes.*
 import com.neffapps.jazzchords.ui.theme.JazzchordsTheme
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.atan2
 
@@ -40,9 +44,10 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var allFrets: List<Fret>
     private val mainViewModel by viewModels<MainViewModel>()
-    private lateinit var handler: Handler
 
     private val progressions = Progressions()
+
+    private lateinit var handler: Handler
 
     private val switchChordsRunnable = Runnable {
         switchChords()
@@ -53,6 +58,11 @@ class MainActivity : ComponentActivity() {
 
         handler.removeCallbacks(switchChordsRunnable)
         handler.postDelayed(switchChordsRunnable, delay)
+    }
+
+    private fun rewind() {
+        handler.removeCallbacks(switchChordsRunnable)
+        handler.postDelayed(switchChordsRunnable, 3000)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -153,6 +163,12 @@ class MainActivity : ComponentActivity() {
                     }
 
                 }
+            }
+        }
+
+        lifecycleScope.launch {
+            mainViewModel.events.collect {
+                rewind()
             }
         }
     }
@@ -297,7 +313,7 @@ fun Content(frets: List<Fret>, baseWidth: Float, baseHeight: Float, viewModel: M
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         color = Color.White,
-                        text = "${chord.shape} shape",
+                        text = if (!chord.shape.isEmpty()) "${chord.shape} shape" else "",
                         fontSize = TextUnit(4.0f + baseWidth/3.0f, TextUnitType.Sp),
                     )
                 }
@@ -310,6 +326,24 @@ fun Content(frets: List<Fret>, baseWidth: Float, baseHeight: Float, viewModel: M
                     FretboardView(frets, baseHeight, viewModel)
                 }
             }
+            Row(
+                modifier = Modifier.height(Dp(70.0f))
+            ) {}
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                Box(modifier = Modifier
+                    .padding(top = 15.dp)
+                    .clickable {
+                        viewModel.reset251()
+                    }
+                ) {
+                    Image(
+                        modifier = Modifier.size(50.dp, 50.dp),
+                        painter = painterResource(id = R.drawable.ic_fast_rewind_black_24dp),
+                        contentDescription = "Replay"
+                    )
+                }
+            }
+
         }
     }
 }
