@@ -35,14 +35,14 @@ import kotlin.math.atan2
 @ExperimentalUnitApi
 class MainActivity : ComponentActivity() {
 
-    private var delay: Long = 12000
+    private var delay: Long = 6000
     private val delays = listOf<Long>(12000, 10000, 8000, 6000, 4000, 3000, 2000, 1000, 500, 250)
 
     private lateinit var allFrets: List<Fret>
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var handler: Handler
 
-    private val keys = Keys()
+    private val progressions = Progressions()
 
     private val switchChordsRunnable = Runnable {
         switchChords()
@@ -133,7 +133,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             Column {
-                                keys.getMostCommon251Keys().forEach {
+                                progressions.getMostCommon251Keys().forEach {
                                     Selectable251Option(
                                         viewModel = mainViewModel,
                                         it,
@@ -159,7 +159,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onPostResume() {
         super.onPostResume()
-        switchChords()
+        handler.postDelayed(switchChordsRunnable, delay)
     }
 }
 
@@ -217,7 +217,7 @@ fun MusicKnob(
     onValueChange: (Float) -> Unit
 ) {
     var rotation by remember {
-        mutableStateOf(limitingAngle)
+        mutableStateOf(179f)
     }
     var touchX by remember {
         mutableStateOf(0f)
