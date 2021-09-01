@@ -19,11 +19,7 @@ class MainViewModel: ViewModel() {
     }
 
     private val chordFamilies = ChordTypes.allFamilies
-
     val currentChord = MutableStateFlow(chords[0])
-
-    val events = MutableStateFlow<MainEvent?>(null)
-
     val activated251Key = MutableStateFlow<Key?>(Progressions().Ascending251Cmaj7)
     var current251Index = 0
 
@@ -31,11 +27,10 @@ class MainViewModel: ViewModel() {
             Pair(chordFamilies[0].id, false)
         )
 
-
     fun switchChord() {
         activated251Key.value?.let {
             current251Index++
-            if (current251Index > chords.size) current251Index = 0
+            if (current251Index >= chords.size) current251Index = 0
             if (current251Index > -1 && current251Index < chords.size) {
                 currentChord.value = it.chords[current251Index]
             }
@@ -93,18 +88,46 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun reset251() {
+    fun rewind251() {
         activated251Key.value?.let {
             current251Index = -1
             currentChord.value = Chord("","", listOf(), "")
-            viewModelScope.launch {
-                events.emit(MainEvent.Rewind)
+            resetTimer()
+        }
+    }
+
+    var passedQuarterSeconds: Long = 0
+    var interval: Long = 24 // 6 seconds
+    var timeSlotIndex = 0
+    var timeSlots = mutableListOf<Long>(interval, interval*2, interval*3)
+
+    fun handleQuarterSecond() {
+        passedQuarterSeconds++
+        var nextSlot: Long = 0
+        if (timeSlotIndex < timeSlots.size) {
+            nextSlot = timeSlots[timeSlotIndex]
+        }
+        if (passedQuarterSeconds >= nextSlot) {
+            slotPassed(timeSlotIndex)
+            timeSlotIndex++
+            if (timeSlotIndex >= timeSlots.size) {
+                timeSlotIndex = 0
+                passedQuarterSeconds = 0
             }
         }
-
     }
-}
 
-sealed class MainEvent {
-    object Rewind: MainEvent()
+    private fun slotPassed(timeSlotIndex: Int) {
+        switchChord()
+    }
+
+    fun resetTimer() {
+        passedQuarterSeconds = 0
+    }
+
+    fun resetWithDelay(milliSeconds: Long) {
+        interval = (milliSeconds / 250)
+        timeSlots = mutableListOf(interval * 1, interval * 2, interval * 3)
+        passedQuarterSeconds = 0
+    }
 }
