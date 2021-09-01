@@ -97,6 +97,7 @@ class MainViewModel: ViewModel() {
     }
 
     var passedQuarterSeconds: Long = 0
+    var startPassedQuarterSeconds: Long = 12
     var interval: Long = 24 // 6 seconds
     var timeSlotIndex = 0
     var timeSlots = mutableListOf<Long>(interval, interval*2, interval*3)
@@ -107,12 +108,12 @@ class MainViewModel: ViewModel() {
         if (timeSlotIndex < timeSlots.size) {
             nextSlot = timeSlots[timeSlotIndex]
         }
-        if (passedQuarterSeconds >= nextSlot) {
+        if ((passedQuarterSeconds - startPassedQuarterSeconds) >= nextSlot) {
             slotPassed(timeSlotIndex)
             timeSlotIndex++
             if (timeSlotIndex >= timeSlots.size) {
                 timeSlotIndex = 0
-                passedQuarterSeconds = 0
+                passedQuarterSeconds = startPassedQuarterSeconds
             }
         }
     }
@@ -123,11 +124,12 @@ class MainViewModel: ViewModel() {
 
     fun resetTimer() {
         passedQuarterSeconds = 0
+        timeSlotIndex = timeSlots.size
     }
 
     fun resetWithDelay(milliSeconds: Long) {
         interval = (milliSeconds / 250)
         timeSlots = mutableListOf(interval * 1, interval * 2, interval * 3)
-        passedQuarterSeconds = 0
+        passedQuarterSeconds = startPassedQuarterSeconds
     }
 }
