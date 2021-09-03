@@ -1,7 +1,6 @@
 package com.neffapps.jazzchords
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,8 +25,13 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
+import androidx.lifecycle.lifecycleScope
 import com.neffapps.jazzchords.notes.*
 import com.neffapps.jazzchords.ui.theme.JazzchordsTheme
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlin.math.PI
 import kotlin.math.atan2
 
@@ -35,29 +39,34 @@ import kotlin.math.atan2
 @ExperimentalUnitApi
 class MainActivity : ComponentActivity() {
 
+    private var quarterSecondsSinceStart = 0
     private var delay: Long = 6000
     private val delays = listOf<Long>(12000, 10000, 8000, 6000, 4000, 3000, 2000, 1000, 500, 250)
 
     private lateinit var allFrets: List<Fret>
     private val mainViewModel by viewModels<MainViewModel>()
-    private lateinit var handler: Handler
 
     private val progressions = Progressions()
 
-    private val switchChordsRunnable = Runnable {
-        switchChords()
-    }
+    class FlowTimer {
+        var active: Boolean = false
 
-    private fun switchChords() {
-        mainViewModel.switchChord()
+        private fun tickerFlow(period: Long, initialDelay: Long = 0) = flow {
+            active = true
+            delay(initialDelay)
+            while (active) {
+                emit(Unit)
+                delay(period)
+            }
+        }
 
-        handler.removeCallbacks(switchChordsRunnable)
-        handler.postDelayed(switchChordsRunnable, delay)
+        fun start(period: Long, initialDelay: Long = 0)  =
+            tickerFlow(period, initialDelay)
+                .flowOn(Dispatchers.Default)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        handler = Handler(mainLooper)
 
         val displayMetrics = resources.displayMetrics
         val dpHeight = displayMetrics.heightPixels / displayMetrics.density
@@ -65,6 +74,13 @@ class MainActivity : ComponentActivity() {
         val baseWidth = dpWidth / 20.0f
         val baseHeight = dpHeight / 20.0f
         allFrets = Fretboard.getAllFrets(baseWidth)
+
+        lifecycleScope.launchWhenCreated {
+            FlowTimer().start(250, 0)
+                .collect {
+                    handleQuarterSecond()
+                }
+        }
 
         setContent {
 
@@ -114,8 +130,7 @@ class MainActivity : ComponentActivity() {
                                     val index = (it * 10.0f).toInt()
                                     delay = delays[index]
                                     speed = delay
-                                    handler.removeCallbacks(switchChordsRunnable)
-                                    handler.postDelayed(switchChordsRunnable, delay)
+                                    mainViewModel.resetWithDelay(delay)
                                 }
                             }
 
@@ -164,9 +179,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onPostResume() {
-        super.onPostResume()
-        handler.postDelayed(switchChordsRunnable, delay)
+    private fun handleQuarterSecond() {
+        quarterSecondsSinceStart++
+        mainViewModel.handleQuarterSecond()
     }
 }
 
@@ -327,7 +342,7 @@ fun Content(frets: List<Fret>, baseWidth: Float, baseHeight: Float, viewModel: M
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         color = Color.White,
-                        text = "${chord.shape} shape",
+                        text = if (!chord.shape.isEmpty()) "${chord.shape} shape" else "",
                         fontSize = TextUnit(4.0f + baseWidth/3.0f, TextUnitType.Sp),
                     )
                 }
@@ -340,6 +355,24 @@ fun Content(frets: List<Fret>, baseWidth: Float, baseHeight: Float, viewModel: M
                     FretboardView(frets, baseHeight, viewModel)
                 }
             }
+            Row(
+                modifier = Modifier.height(Dp(70.0f))
+            ) {}
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                Box(modifier = Modifier
+                    .padding(top = 15.dp)
+                    .clickable {
+                        viewModel.rewind251()
+                    }
+                ) {
+                    Image(
+                        modifier = Modifier.size(50.dp, 50.dp),
+                        painter = painterResource(id = R.drawable.ic_fast_rewind_black_24dp),
+                        contentDescription = "Replay"
+                    )
+                }
+            }
+
         }
     }
 }
@@ -366,6 +399,39 @@ fun FretView(
     Column {
         for (note in stringNotes) {
             FretStringView(openPosition, note, width, baseHeight, viewModel)
+
+//            val backgroundColor =
+//                if (!openPosition) Color.Black
+//                else com.neffapps.jazzchords.ui.theme.Anthrazit
+            if (note.string == 4) {
+                Box (
+                    modifier = Modifier
+                        .background(com.neffapps.jazzchords.ui.theme.Anthrazit)
+                        .width(Dp(width))
+                        .height(Dp(12f))
+                ){
+                    if (
+                        note.fret == 5
+                        || note.fret == 7
+                        || note.fret == 10
+                        || note.fret == 12
+                    )
+                    {
+                        // Draw white dot
+                        Surface(
+                            modifier = Modifier
+                                .padding(top = Dp(7f))
+                                .size(Dp(5.0f))
+                                .align(Alignment.Center),
+                            shape = CircleShape,
+                            color = Color.LightGray
+                        ) {
+                            // No content here
+                        }
+                    }
+                }
+            }
+
         }
     }
 }

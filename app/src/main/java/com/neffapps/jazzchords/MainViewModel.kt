@@ -3,8 +3,14 @@ package com.neffapps.jazzchords
 import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.neffapps.jazzchords.notes.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 class MainViewModel: ViewModel() {
 
@@ -13,9 +19,7 @@ class MainViewModel: ViewModel() {
     }
 
     private val chordFamilies = ChordTypes.allFamilies
-
     val currentChord = MutableStateFlow(chords[0])
-
     val activated251Key = MutableStateFlow<Key?>(Progressions().Ascending251Cmaj7)
     var current251Index = 0
 
@@ -26,7 +30,7 @@ class MainViewModel: ViewModel() {
     fun switchChord() {
         activated251Key.value?.let {
             current251Index++
-            if (current251Index > chords.size) current251Index = 0
+            if (current251Index >= chords.size) current251Index = 0
             if (current251Index > -1 && current251Index < chords.size) {
                 currentChord.value = it.chords[current251Index]
             }
@@ -82,5 +86,50 @@ class MainViewModel: ViewModel() {
             }
             Log.d("TEST", "updateChords ${chords.size}")
         }
+    }
+
+    fun rewind251() {
+        activated251Key.value?.let {
+            current251Index = -1
+            currentChord.value = Chord("","", listOf(), "")
+            resetTimer()
+        }
+    }
+
+    var passedQuarterSeconds: Long = 0
+    var startPassedQuarterSeconds: Long = 12
+    var interval: Long = 24 // 6 seconds
+    var timeSlotIndex = 0
+    var timeSlots = mutableListOf<Long>(interval, interval*2, interval*3)
+
+    fun handleQuarterSecond() {
+        passedQuarterSeconds++
+        var nextSlot: Long = 0
+        if (timeSlotIndex < timeSlots.size) {
+            nextSlot = timeSlots[timeSlotIndex]
+        }
+        if ((passedQuarterSeconds - startPassedQuarterSeconds) >= nextSlot) {
+            slotPassed(timeSlotIndex)
+            timeSlotIndex++
+            if (timeSlotIndex >= timeSlots.size) {
+                timeSlotIndex = 0
+                passedQuarterSeconds = startPassedQuarterSeconds
+            }
+        }
+    }
+
+    private fun slotPassed(timeSlotIndex: Int) {
+        switchChord()
+    }
+
+    fun resetTimer() {
+        passedQuarterSeconds = 0
+        timeSlotIndex = timeSlots.size
+    }
+
+    fun resetWithDelay(milliSeconds: Long) {
+        interval = (milliSeconds / 250)
+        timeSlots = mutableListOf(interval * 1, interval * 2, interval * 3)
+        passedQuarterSeconds = startPassedQuarterSeconds
     }
 }
