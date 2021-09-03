@@ -140,7 +140,14 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             }
-
+                            Column {
+                                progressions.getFlyMeToTheMoonKey().forEach {
+                                    FlyMeToTheMoonOption(
+                                        viewModel = mainViewModel,
+                                        it,
+                                    )
+                                }
+                            }
                             Column {
                                 ChordTypes.allFamilies.forEach {
                                     SelectableChordOption(
@@ -202,6 +209,29 @@ fun Selectable251Option(
     ) {
         Text(
             text = "2-5-1 in " + key.name,
+            color = if (selected.value?.name == key.name)
+                Color.Yellow.copy(alpha = 0.6f)
+            else Color.LightGray.copy(alpha = 0.3f)
+        )
+    }
+}
+
+@ExperimentalUnitApi
+@Composable
+fun FlyMeToTheMoonOption(
+    viewModel: MainViewModel,
+    key: Key,
+) {
+    val selected = viewModel.activated251Key.collectAsState()
+
+    Box(modifier = Modifier
+        .padding(top = 15.dp, start = 30.dp, end = 80.dp)
+        .clickable {
+            viewModel.toggle251Key(key)
+        }
+    ) {
+        Text(
+            text = key.name,
             color = if (selected.value?.name == key.name)
                 Color.Yellow.copy(alpha = 0.6f)
             else Color.LightGray.copy(alpha = 0.3f)

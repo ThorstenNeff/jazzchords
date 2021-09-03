@@ -191,4 +191,16 @@ class Progressions {
         Cmaj7_251, Ascending251Cmaj7, Dmaj7_251, Fmaj7_251, Gmaj7_251, Bbmaj7_251,
     )
 
+    fun getFlyMeToTheMoonKey() = listOf(
+        Key(
+            name = "Fly me to the moon in CMaj7",
+            chords = listOf(
+                getMin7Chord("Am7",0),
+                getMin7Chord("Dm7", 0),
+                getDom7Chord("G7", 0),
+                getMaj7Chord("Cmaj7", 0),
+            ),
+            halfNoteType = HalfNoteType.SHARP,
+        )
+    )
 }
