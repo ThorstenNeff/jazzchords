@@ -199,6 +199,11 @@ class Progressions {
                 getMin7Chord("Dm7", 0),
                 getDom7Chord("G7", 0),
                 getMaj7Chord("Cmaj7", 0),
+
+                getMin7Chord("Am7",1),
+                getMin7Chord("Dm7", 1),
+                getDom7Chord("G7", 1),
+                getMaj7Chord("Cmaj7", 1),
             ),
             halfNoteType = HalfNoteType.SHARP,
         )

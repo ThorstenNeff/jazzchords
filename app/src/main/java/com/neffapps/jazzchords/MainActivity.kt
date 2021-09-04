@@ -146,18 +146,17 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             }
-
                             Column {
-                                progressions.getMostCommon251Keys().forEach {
-                                    Selectable251Option(
+                                progressions.getFlyMeToTheMoonKey().forEach {
+                                    FlyMeToTheMoonOption(
                                         viewModel = mainViewModel,
                                         it,
                                     )
                                 }
                             }
                             Column {
-                                progressions.getFlyMeToTheMoonKey().forEach {
-                                    FlyMeToTheMoonOption(
+                                progressions.getMostCommon251Keys().forEach {
+                                    Selectable251Option(
                                         viewModel = mainViewModel,
                                         it,
                                     )
