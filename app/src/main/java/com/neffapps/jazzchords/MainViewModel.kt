@@ -88,7 +88,7 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun rewind251() {
+    fun rewind() {
         activated251Key.value?.let {
             current251Index = -1
             currentChord.value = Chord("","", listOf(), "")

@@ -28,10 +28,12 @@ import androidx.compose.ui.unit.*
 import androidx.lifecycle.lifecycleScope
 import com.neffapps.jazzchords.notes.*
 import com.neffapps.jazzchords.ui.theme.JazzchordsTheme
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
 import kotlin.math.PI
 import kotlin.math.atan2
 
@@ -39,7 +41,7 @@ import kotlin.math.atan2
 @ExperimentalUnitApi
 class MainActivity : ComponentActivity() {
 
-    private var quarterSecondsSinceStart = 0
+    private lateinit var flowTimer: FlowTimer
     private var delay: Long = 6000
     private val delays = listOf<Long>(12000, 10000, 8000, 6000, 4000, 3000, 2000, 1000, 500, 250)
 
@@ -50,19 +52,38 @@ class MainActivity : ComponentActivity() {
 
     class FlowTimer {
         var active: Boolean = false
+        var isPlaying: Boolean = true
 
         private fun tickerFlow(period: Long, initialDelay: Long = 0) = flow {
             active = true
-            delay(initialDelay)
-            while (active) {
-                emit(Unit)
-                delay(period)
+            while (true) {
+                if (active) {
+                    if (!isPlaying) {
+                        isPlaying = true
+                        delay(initialDelay)
+                    }
+                    emit(Unit)
+                    delay(period)
+                }
             }
-        }
+        }.onStart { delay(initialDelay) }
 
         fun start(period: Long, initialDelay: Long = 0)  =
             tickerFlow(period, initialDelay)
                 .flowOn(Dispatchers.Default)
+
+        fun pause() {
+            active = false
+        }
+
+        fun stop() {
+            isPlaying = false
+            active = false
+        }
+
+        fun play() {
+           active = true
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,20 +97,19 @@ class MainActivity : ComponentActivity() {
         allFrets = Fretboard.getAllFrets(baseWidth)
 
         lifecycleScope.launchWhenCreated {
-            FlowTimer().start(250, 0)
+            flowTimer = FlowTimer()
+            flowTimer.start(250, 0)
                 .collect {
                     handleQuarterSecond()
                 }
         }
 
         setContent {
-
             var speed by remember {
                 mutableStateOf(delay)
             }
 
             JazzchordsTheme(darkTheme = true) {
-
                 Row(
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -106,7 +126,7 @@ class MainActivity : ComponentActivity() {
                             color = Color.Blue,
                         ) {
                             // A surface container using the 'background' color from the theme
-                            Content(allFrets, baseWidth, baseHeight, mainViewModel)
+                            Content(allFrets, baseWidth, baseHeight, mainViewModel, flowTimer)
                         }
                     }
                 }
@@ -179,7 +199,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleQuarterSecond() {
-        quarterSecondsSinceStart++
         mainViewModel.handleQuarterSecond()
     }
 }
@@ -314,9 +333,16 @@ fun MusicKnob(
     )
 }
 
+@ExperimentalComposeUiApi
 @ExperimentalUnitApi
 @Composable
-fun Content(frets: List<Fret>, baseWidth: Float, baseHeight: Float, viewModel: MainViewModel) {
+fun Content(
+    frets: List<Fret>,
+    baseWidth: Float,
+    baseHeight: Float,
+    viewModel: MainViewModel,
+    flowTimer: MainActivity.FlowTimer
+) {
     val chord by viewModel.currentChord.collectAsState()
 
     Surface(color = com.neffapps.jazzchords.ui.theme.Anthrazit) {
@@ -355,23 +381,59 @@ fun Content(frets: List<Fret>, baseWidth: Float, baseHeight: Float, viewModel: M
                 }
             }
             Row(
-                modifier = Modifier.height(Dp(70.0f))
+                modifier = Modifier.height(Dp(120.0f))
             ) {}
             Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 Box(modifier = Modifier
-                    .padding(top = 15.dp)
+                    .padding(end = 50.dp, top = 15.dp)
                     .clickable {
-                        viewModel.rewind251()
+                        viewModel.rewind()
                     }
                 ) {
                     Image(
                         modifier = Modifier.size(50.dp, 50.dp),
-                        painter = painterResource(id = R.drawable.ic_fast_rewind_black_24dp),
+                        painter = painterResource(id = R.drawable.ic_backtostart),
                         contentDescription = "Replay"
                     )
                 }
+                Box(modifier = Modifier
+                    .padding(end = 50.dp, top = 15.dp)
+                    .clickable {
+                        viewModel.rewind()
+                        flowTimer.stop()
+                    }
+                ) {
+                    Image(
+                        modifier = Modifier.size(50.dp, 50.dp),
+                        painter = painterResource(id = R.drawable.ic_stop),
+                        contentDescription = "Stop"
+                    )
+                }
+                Box(modifier = Modifier
+                    .padding(end = 50.dp, top = 15.dp)
+                    .clickable {
+                        flowTimer.pause()
+                    }
+                ) {
+                    Image(
+                        modifier = Modifier.size(50.dp, 50.dp),
+                        painter = painterResource(id = R.drawable.ic_pause),
+                        contentDescription = "Pause"
+                    )
+                }
+                Box(modifier = Modifier
+                    .padding(end = 50.dp, top = 15.dp)
+                    .clickable {
+                        flowTimer.play()
+                    }
+                ) {
+                    Image(
+                        modifier = Modifier.size(50.dp, 50.dp),
+                        painter = painterResource(id = R.drawable.ic_play),
+                        contentDescription = "Play"
+                    )
+                }
             }
-
         }
     }
 }
@@ -486,12 +548,19 @@ fun FretStringView(
     }
 }
 
+@ExperimentalComposeUiApi
 @ExperimentalUnitApi
 @Preview
 @Composable
 fun PhotographerCardPreview() {
     val mainViewModel = MainViewModel()
+    val flowTimer = MainActivity.FlowTimer()
     JazzchordsTheme {
-        Content(Fretboard.getAllFrets(20.0f), 20.0f,20.0f, mainViewModel)
+        Content(
+            Fretboard.getAllFrets(20.0f),
+            20.0f,
+            20.0f,
+            mainViewModel,
+            flowTimer)
     }
 }
