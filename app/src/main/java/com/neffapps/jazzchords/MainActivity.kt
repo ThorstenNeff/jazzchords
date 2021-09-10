@@ -399,6 +399,19 @@ fun Content(
                 Box(modifier = Modifier
                     .padding(end = 50.dp, top = 15.dp)
                     .clickable {
+                        viewModel.stepBack()
+                        flowTimer.pause()
+                    }
+                ) {
+                    Image(
+                        modifier = Modifier.size(50.dp, 50.dp),
+                        painter = painterResource(id = R.drawable.ic_backward),
+                        contentDescription = "Backwards"
+                    )
+                }
+                Box(modifier = Modifier
+                    .padding(end = 50.dp, top = 15.dp)
+                    .clickable {
                         viewModel.rewind()
                         flowTimer.stop()
                     }
@@ -431,6 +444,19 @@ fun Content(
                         modifier = Modifier.size(50.dp, 50.dp),
                         painter = painterResource(id = R.drawable.ic_play),
                         contentDescription = "Play"
+                    )
+                }
+                Box(modifier = Modifier
+                    .padding(end = 50.dp, top = 15.dp)
+                    .clickable {
+                        viewModel.stepForward()
+                        flowTimer.pause()
+                    }
+                ) {
+                    Image(
+                        modifier = Modifier.size(50.dp, 50.dp),
+                        painter = painterResource(id = R.drawable.ic_forward),
+                        contentDescription = "Forward"
                     )
                 }
             }

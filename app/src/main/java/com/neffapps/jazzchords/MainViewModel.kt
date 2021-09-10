@@ -3,14 +3,8 @@ package com.neffapps.jazzchords
 import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.neffapps.jazzchords.notes.*
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 
 class MainViewModel: ViewModel() {
 
@@ -27,7 +21,28 @@ class MainViewModel: ViewModel() {
             Pair(chordFamilies[0].id, false)
         )
 
-    fun switchChord() {
+    fun lastChord() {
+        activated251Key.value?.let {
+            current251Index--
+            if (current251Index >= chords.size) current251Index = 0
+            if (current251Index > -1 && current251Index < chords.size) {
+                currentChord.value = it.chords[current251Index]
+            }
+            if (current251Index < 0) {
+                current251Index = chords.size -1
+                currentChord.value = it.chords[current251Index]
+            }
+        } ?: run {
+            chords.let {
+                val currentChordIndex = rand(0, it.size - 1)
+                if (currentChordIndex > -1) {
+                    currentChord.value = it[currentChordIndex]
+                }
+            }
+        }
+    }
+
+    fun nextChord() {
         activated251Key.value?.let {
             current251Index++
             if (current251Index >= chords.size) current251Index = 0
@@ -109,7 +124,7 @@ class MainViewModel: ViewModel() {
             nextSlot = timeSlots[timeSlotIndex]
         }
         if ((passedQuarterSeconds - startPassedQuarterSeconds) >= nextSlot) {
-            slotPassed(timeSlotIndex)
+            slotPassed()
             timeSlotIndex++
             if (timeSlotIndex >= timeSlots.size) {
                 timeSlotIndex = 0
@@ -118,8 +133,8 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    private fun slotPassed(timeSlotIndex: Int) {
-        switchChord()
+    private fun slotPassed() {
+        nextChord()
     }
 
     fun resetTimer() {
@@ -131,5 +146,13 @@ class MainViewModel: ViewModel() {
         interval = (milliSeconds / 250)
         timeSlots = mutableListOf(interval * 1, interval * 2, interval * 3)
         passedQuarterSeconds = startPassedQuarterSeconds
+    }
+
+    fun stepBack() {
+        lastChord()
+    }
+
+    fun stepForward() {
+        nextChord()
     }
 }
