@@ -208,4 +208,27 @@ class Progressions {
             halfNoteType = HalfNoteType.SHARP,
         )
     )
+
+    fun getAutumnLeavesKey() = listOf(
+        Key(
+            name = "Autum Leaves in BbMaj7",
+            chords = listOf(
+                getMin7Chord("Cm7", 0),
+                getDom7Chord("F7", 0),
+                getMaj7Chord("Bbmaj7", 0),
+                getMaj7Chord("Emaj7", 0),
+
+                getMin7Chord("Cm7", 1),
+                getDom7Chord("F7", 1),
+                getMaj7Chord("Bbmaj7", 1),
+                getMaj7Chord("Emaj7", 1),
+
+                getMin7Chord("Cm7", 2),
+                getDom7Chord("F7", 2),
+                getMaj7Chord("Bbmaj7", 2),
+                getMaj7Chord("Emaj7", 2),
+            ),
+            halfNoteType = HalfNoteType.SHARP,
+        )
+    )
 }

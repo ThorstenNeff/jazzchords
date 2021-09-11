@@ -168,7 +168,13 @@ class MainActivity : ComponentActivity() {
                             }
                             Column {
                                 progressions.getFlyMeToTheMoonKey().forEach {
-                                    FlyMeToTheMoonOption(
+                                    TwoFiveOneOption(
+                                        viewModel = mainViewModel,
+                                        it,
+                                    )
+                                }
+                                progressions.getAutumnLeavesKey().forEach {
+                                    TwoFiveOneOption(
                                         viewModel = mainViewModel,
                                         it,
                                     )
@@ -251,7 +257,7 @@ fun Selectable251Option(
 
 @ExperimentalUnitApi
 @Composable
-fun FlyMeToTheMoonOption(
+fun TwoFiveOneOption(
     viewModel: MainViewModel,
     key: Key,
 ) {
