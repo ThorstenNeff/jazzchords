@@ -66,10 +66,12 @@ class MainActivity : ComponentActivity() {
             flowTimer = FlowTimer()
             flowTimer.build(beatPeriod(), 0)
                 .collect {
-                    if (it == 1) {
+                    if (it == 2) {
                         handleQuarterSecond()
                     } else if (it == 0) {
                         updateBeatOnly()
+                    } else if (it == 1) {
+                        startChords()
                     }
                 }
         }
@@ -175,6 +177,11 @@ class MainActivity : ComponentActivity() {
 
     private fun updateBeatOnly() {
         mainViewModel.updateBeatOnly()
+    }
+
+    private fun startChords() {
+        mainViewModel.rewind()
+        mainViewModel.handleQuarterSecond()
     }
 }
 

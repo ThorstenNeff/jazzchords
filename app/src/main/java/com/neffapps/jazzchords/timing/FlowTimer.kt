@@ -19,12 +19,14 @@ class FlowTimer {
             if (active) {
                 if (!isPlaying) {
                     isPlaying = true
-                    for (i in 0 .. 15) {
+                    for (i in 0 .. 14) {
                         delay(_period)
                         emit(0)
                     }
+                    delay(_period)
+                    emit(1)
                 }
-                emit(1)
+                emit(2)
                 delay(_period)
             }
         }
