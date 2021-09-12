@@ -15,6 +15,7 @@ class MainViewModel: ViewModel() {
     private val chordFamilies = ChordTypes.allFamilies
     val currentChord = MutableStateFlow(chords[0])
     val activated251Key = MutableStateFlow<Key?>(Progressions().Ascending251Cmaj7)
+    val beatIndex = MutableStateFlow<Long>(-1)
     var current251Index = 0
 
     val activatedChordFamilies = mutableStateMapOf(
@@ -111,24 +112,26 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    var passedQuarterSeconds: Long = 0
-    var startPassedQuarterSeconds: Long = 12
-    var interval: Long = 24 // 6 seconds
+    var passedSixteenths: Long = 0
+    var quartersPerMeasure: Long = 4
+    var measureTime: Long = quartersPerMeasure * 4
     var timeSlotIndex = 0
-    var timeSlots = mutableListOf<Long>(interval, interval*2, interval*3)
+    var timeSlots = mutableListOf<Long>(measureTime, measureTime*2, measureTime*3)
 
     fun handleQuarterSecond() {
-        passedQuarterSeconds++
+        passedSixteenths++
+        beatIndex.value = (passedSixteenths / 2) % 8
+        Log.d("timer", "Beatindex: ${beatIndex.value}")
         var nextSlot: Long = 0
         if (timeSlotIndex < timeSlots.size) {
             nextSlot = timeSlots[timeSlotIndex]
         }
-        if ((passedQuarterSeconds - startPassedQuarterSeconds) >= nextSlot) {
+        if ((passedSixteenths) >= nextSlot) {
             slotPassed()
             timeSlotIndex++
             if (timeSlotIndex >= timeSlots.size) {
                 timeSlotIndex = 0
-                passedQuarterSeconds = startPassedQuarterSeconds
+                passedSixteenths = 0
             }
         }
     }
@@ -138,14 +141,13 @@ class MainViewModel: ViewModel() {
     }
 
     fun resetTimer() {
-        passedQuarterSeconds = 0
+        passedSixteenths = 0
+        beatIndex.value = -1
         timeSlotIndex = timeSlots.size
     }
 
-    fun resetWithDelay(milliSeconds: Long) {
-        interval = (milliSeconds / 250)
-        timeSlots = mutableListOf(interval * 1, interval * 2, interval * 3)
-        passedQuarterSeconds = startPassedQuarterSeconds
+    fun setBpm(bpm: Long) {
+        // bpm is just speed, handle in acticity for now
     }
 
     fun stepBack() {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -19,21 +20,20 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.lifecycle.lifecycleScope
 import com.neffapps.jazzchords.notes.*
+import com.neffapps.jazzchords.strums.StrumType
+import com.neffapps.jazzchords.timing.FlowTimer
 import com.neffapps.jazzchords.ui.theme.JazzchordsTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onStart
 import kotlin.math.PI
 import kotlin.math.atan2
 
@@ -42,49 +42,15 @@ import kotlin.math.atan2
 class MainActivity : ComponentActivity() {
 
     private lateinit var flowTimer: FlowTimer
-    private var delay: Long = 6000
-    private val delays = listOf<Long>(12000, 10000, 8000, 6000, 4000, 3000, 2000, 1000, 500, 250)
+    private var bpm: Long = 60
+    private val bpmPresets = listOf<Long>(60, 80, 100, 120, 140, 160, 180, 200, 220, 240)
 
     private lateinit var allFrets: List<Fret>
     private val mainViewModel by viewModels<MainViewModel>()
 
     private val progressions = Progressions()
 
-    class FlowTimer {
-        var active: Boolean = false
-        var isPlaying: Boolean = true
-
-        private fun tickerFlow(period: Long, initialDelay: Long = 0) = flow {
-            active = true
-            while (true) {
-                if (active) {
-                    if (!isPlaying) {
-                        isPlaying = true
-                        delay(initialDelay)
-                    }
-                    emit(Unit)
-                    delay(period)
-                }
-            }
-        }.onStart { delay(initialDelay) }
-
-        fun start(period: Long, initialDelay: Long = 0)  =
-            tickerFlow(period, initialDelay)
-                .flowOn(Dispatchers.Default)
-
-        fun pause() {
-            active = false
-        }
-
-        fun stop() {
-            isPlaying = false
-            active = false
-        }
-
-        fun play() {
-           active = true
-        }
-    }
+    private fun beatPeriod(): Long = ((60f / bpm / 4f) * 1000).toLong()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +64,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launchWhenCreated {
             flowTimer = FlowTimer()
-            flowTimer.start(250, 0)
+            flowTimer.start(beatPeriod(), 0)
                 .collect {
                     handleQuarterSecond()
                 }
@@ -106,7 +72,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             var speed by remember {
-                mutableStateOf(delay)
+                mutableStateOf(bpm)
             }
 
             JazzchordsTheme(darkTheme = true) {
@@ -148,9 +114,10 @@ class MainActivity : ComponentActivity() {
                                         .padding(top = 20.dp)
                                 ) {
                                     val index = (it * 10.0f).toInt()
-                                    delay = delays[index]
-                                    speed = delay
-                                    mainViewModel.resetWithDelay(delay)
+                                    bpm = bpmPresets[index]
+                                    speed = bpm
+                                    mainViewModel.setBpm(bpm)
+                                    flowTimer.setPeriod(beatPeriod())
                                 }
                             }
 
@@ -161,7 +128,7 @@ class MainActivity : ComponentActivity() {
                                 ) {
                                     Text(
                                         modifier = Modifier.width(50.dp),
-                                        text = "${speed.toFloat() / 1000.0f}s",
+                                        text = "$speed bpm",
                                         color = Color.Yellow.copy(alpha = 0.6f)
                                     )
                                 }
@@ -224,6 +191,52 @@ fun SelectableChordOption(
             else Color.LightGray.copy(alpha = 0.3f)
         )
     }
+}
+
+@ExperimentalUnitApi
+@Composable
+fun StrumArrows(viewModel: MainViewModel, width: Double) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy((-4).dp),
+            modifier = Modifier.align(Alignment.CenterHorizontally).width(Dp(width.toFloat()))
+        ) {
+            StrumArrow(viewModel, 0, StrumType.DOWN)
+            StrumArrow(viewModel, 1, StrumType.UP)
+            Spacer(modifier = Modifier.width(15.dp))
+            StrumArrow(viewModel, 2, StrumType.DOWN)
+            StrumArrow(viewModel, 3, StrumType.UP)
+            Spacer(modifier = Modifier.width(15.dp))
+            StrumArrow(viewModel, 4, StrumType.DOWN)
+            StrumArrow(viewModel, 5, StrumType.UP)
+            Spacer(modifier = Modifier.width(15.dp))
+            StrumArrow(viewModel, 6, StrumType.DOWN)
+            StrumArrow(viewModel, 7, StrumType.UP)
+        }
+    }
+}
+
+@ExperimentalUnitApi
+@Composable
+fun StrumArrow(
+    viewModel: MainViewModel,
+    index: Int,
+    type: StrumType
+) {
+    val beat = viewModel.beatIndex.collectAsState()
+    val drawable = when (type) {
+        StrumType.DOWN -> ImageVector.vectorResource(id = R.drawable.ic_uparrow)
+        StrumType.UP -> ImageVector.vectorResource(id = R.drawable.ic_downarrow)
+        StrumType.MISS -> ImageVector.vectorResource(id = R.drawable.ic_miss)
+    }
+    Icon(
+        imageVector = drawable,
+        contentDescription = "",
+        modifier = Modifier.size(24.dp, 60.dp),
+        tint = if (beat.value >= index) { Color.LightGray } else {Color.Black}
+    )
 }
 
 @ExperimentalUnitApi
@@ -341,11 +354,13 @@ fun Content(
     baseWidth: Float,
     baseHeight: Float,
     viewModel: MainViewModel,
-    flowTimer: MainActivity.FlowTimer
+    flowTimer: FlowTimer
 ) {
     val chord by viewModel.currentChord.collectAsState()
 
     Surface(color = com.neffapps.jazzchords.ui.theme.Anthrazit) {
+        StrumArrows(viewModel = viewModel, width = frets.sumOf { it.width.toDouble() })
+
         Column {
             Row(
                 modifier = Modifier
@@ -580,13 +595,8 @@ fun FretStringView(
 @Composable
 fun PhotographerCardPreview() {
     val mainViewModel = MainViewModel()
-    val flowTimer = MainActivity.FlowTimer()
+    val flowTimer = FlowTimer()
     JazzchordsTheme {
-        Content(
-            Fretboard.getAllFrets(20.0f),
-            20.0f,
-            20.0f,
-            mainViewModel,
-            flowTimer)
+        StrumArrows(viewModel = mainViewModel, width = 200.0)
     }
 }
