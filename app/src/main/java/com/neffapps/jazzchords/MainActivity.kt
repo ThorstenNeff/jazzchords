@@ -64,9 +64,13 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launchWhenCreated {
             flowTimer = FlowTimer()
-            flowTimer.start(beatPeriod(), 0)
+            flowTimer.build(beatPeriod(), 0)
                 .collect {
-                    handleQuarterSecond()
+                    if (it == 1) {
+                        handleQuarterSecond()
+                    } else if (it == 0) {
+                        updateBeatOnly()
+                    }
                 }
         }
 
@@ -168,6 +172,10 @@ class MainActivity : ComponentActivity() {
     private fun handleQuarterSecond() {
         mainViewModel.handleQuarterSecond()
     }
+
+    private fun updateBeatOnly() {
+        mainViewModel.updateBeatOnly()
+    }
 }
 
 @ExperimentalUnitApi
@@ -201,7 +209,9 @@ fun StrumArrows(viewModel: MainViewModel, width: Double) {
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy((-4).dp),
-            modifier = Modifier.align(Alignment.CenterHorizontally).width(Dp(width.toFloat()))
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .width(Dp(width.toFloat()))
         ) {
             StrumArrow(viewModel, 0, StrumType.DOWN)
             StrumArrow(viewModel, 1, StrumType.UP)
@@ -226,6 +236,7 @@ fun StrumArrow(
     type: StrumType
 ) {
     val beat = viewModel.beatIndex.collectAsState()
+
     val drawable = when (type) {
         StrumType.DOWN -> ImageVector.vectorResource(id = R.drawable.ic_uparrow)
         StrumType.UP -> ImageVector.vectorResource(id = R.drawable.ic_downarrow)
@@ -357,6 +368,7 @@ fun Content(
     flowTimer: FlowTimer
 ) {
     val chord by viewModel.currentChord.collectAsState()
+    val showCurrentChord = viewModel.showCurrentChord.collectAsState(false)
 
     Surface(color = com.neffapps.jazzchords.ui.theme.Anthrazit) {
         StrumArrows(viewModel = viewModel, width = frets.sumOf { it.width.toDouble() })
@@ -372,18 +384,30 @@ fun Content(
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         color = Color.White,
-                        text = if (chord.halfNoteType == HalfNoteType.FLAT) {
-                            chord.flatName
-                        } else {
-                            chord.name
+                        text = when {
+                            !showCurrentChord.value -> {
+                                ""
+                            }
+                            chord.halfNoteType == HalfNoteType.FLAT -> {
+                                chord.flatName
+                            }
+                            else -> {
+                                chord.name
+                            }
                         },
-                        fontSize = TextUnit(4.0f + baseWidth/2.0f, TextUnitType.Sp),
+                        fontSize = TextUnit(4.0f + baseWidth / 2.0f, TextUnitType.Sp),
                     )
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         color = Color.White,
-                        text = if (!chord.shape.isEmpty()) "${chord.shape} shape" else "",
-                        fontSize = TextUnit(4.0f + baseWidth/3.0f, TextUnitType.Sp),
+                        text = if (!showCurrentChord.value) {
+                            ""
+                        } else if (!chord.shape.isEmpty()) {
+                            "${chord.shape} shape"
+                        } else {
+                            ""
+                        },
+                        fontSize = TextUnit(4.0f + baseWidth / 3.0f, TextUnitType.Sp),
                     )
                 }
             }
@@ -549,6 +573,8 @@ fun FretStringView(
 ) {
     val chord by viewModel.currentChord.collectAsState()
     val key by viewModel.activated251Key.collectAsState()
+    val showCurrentChord = viewModel.showCurrentChord.collectAsState(false)
+
     val backgroundColor =
         if (!openPosition) Color.Black
         else com.neffapps.jazzchords.ui.theme.Anthrazit
@@ -563,7 +589,7 @@ fun FretStringView(
             thickness = Dp( 1.0f),
             modifier = Modifier.align(Alignment.Center)
         )
-        if (note.noteInChord(chord.notes)) {
+        if (note.noteInChord(chord.notes) && showCurrentChord.value) {
             Surface(
                 modifier = Modifier
                     .size(Dp(baseHeight - 2.0f))

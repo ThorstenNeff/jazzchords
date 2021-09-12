@@ -14,6 +14,7 @@ class MainViewModel: ViewModel() {
 
     private val chordFamilies = ChordTypes.allFamilies
     val currentChord = MutableStateFlow(chords[0])
+    val showCurrentChord = MutableStateFlow(false)
     val activated251Key = MutableStateFlow<Key?>(Progressions().Ascending251Cmaj7)
     val beatIndex = MutableStateFlow<Long>(-1)
     var current251Index = 0
@@ -118,7 +119,8 @@ class MainViewModel: ViewModel() {
     var timeSlotIndex = 0
     var timeSlots = mutableListOf<Long>(measureTime, measureTime*2, measureTime*3)
 
-    fun handleQuarterSecond() {
+    fun handleQuarterSecond(switchChords: Boolean = true) {
+        showCurrentChord.value = switchChords
         passedSixteenths++
         beatIndex.value = (passedSixteenths / 2) % 8
         Log.d("timer", "Beatindex: ${beatIndex.value}")
@@ -127,7 +129,7 @@ class MainViewModel: ViewModel() {
             nextSlot = timeSlots[timeSlotIndex]
         }
         if ((passedSixteenths) >= nextSlot) {
-            slotPassed()
+            slotPassed(switchChords)
             timeSlotIndex++
             if (timeSlotIndex >= timeSlots.size) {
                 timeSlotIndex = 0
@@ -136,8 +138,10 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    private fun slotPassed() {
-        nextChord()
+    private fun slotPassed(switchChords: Boolean) {
+        if (switchChords) {
+            nextChord()
+        }
     }
 
     fun resetTimer() {
@@ -156,5 +160,9 @@ class MainViewModel: ViewModel() {
 
     fun stepForward() {
         nextChord()
+    }
+
+    fun updateBeatOnly() {
+        handleQuarterSecond(false)
     }
 }
