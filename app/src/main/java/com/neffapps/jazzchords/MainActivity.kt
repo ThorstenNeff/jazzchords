@@ -293,7 +293,7 @@ fun MusicKnob(
     onValueChange: (Float) -> Unit
 ) {
     var rotation by remember {
-        mutableStateOf(179f)
+        mutableStateOf(40f)
     }
     var touchX by remember {
         mutableStateOf(0f)
