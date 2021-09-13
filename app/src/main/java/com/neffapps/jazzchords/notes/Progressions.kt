@@ -187,10 +187,6 @@ class Progressions {
         halfNoteType = HalfNoteType.FLAT
     )
 
-    fun getMostCommon251Keys() = listOf(
-        Cmaj7_251, Ascending251Cmaj7, Dmaj7_251, Fmaj7_251, Gmaj7_251, Bbmaj7_251,
-    )
-
     fun getFlyMeToTheMoonKey() = listOf(
         Key(
             name = "Fly me to the moon in CMaj7",
@@ -231,4 +227,17 @@ class Progressions {
             halfNoteType = HalfNoteType.FLAT,
         )
     )
+
+    fun getMostCommon251Keys() = listOf(
+        getFlyMeToTheMoonKey().first(),
+        getAutumnLeavesKey().first(),
+        Cmaj7_251,
+        Ascending251Cmaj7,
+        Dmaj7_251,
+        Fmaj7_251,
+        Gmaj7_251,
+        Bbmaj7_251,
+    )
+
+
 }

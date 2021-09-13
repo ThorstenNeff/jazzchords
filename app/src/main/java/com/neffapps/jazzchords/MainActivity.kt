@@ -10,10 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -108,8 +105,38 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Box(
                         modifier = Modifier
+                            .align(Alignment.Start)
+                            .padding(top = 100.dp)
+                    ) {
+                        StrumArrows(
+                            viewModel = mainViewModel,
+                            width = allFrets.sumOf { it.width.toDouble() }
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 20.dp)
+                    ) {
+                        ProgressionPicker(
+                            viewModel = mainViewModel,
+                            progressions = progressions,
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
                             .align(Alignment.End)
-                            .padding(top = 15.dp)
+                            .padding(top = 20.dp)
                     ) {
                         Row() {
                             Column(modifier = Modifier.fillMaxHeight()) {
@@ -129,43 +156,13 @@ class MainActivity : ComponentActivity() {
 
                             Column {
                                 Box(modifier = Modifier
-                                    .padding(top = 15.dp, end = 80.dp)
+                                    .padding(top = 20.dp, end = 20.dp)
 
                                 ) {
                                     Text(
                                         modifier = Modifier.width(50.dp),
                                         text = "$speed bpm",
                                         color = Color.Yellow.copy(alpha = 0.6f)
-                                    )
-                                }
-                            }
-                            Column {
-                                progressions.getFlyMeToTheMoonKey().forEach {
-                                    TwoFiveOneOption(
-                                        viewModel = mainViewModel,
-                                        it,
-                                    )
-                                }
-                                progressions.getAutumnLeavesKey().forEach {
-                                    TwoFiveOneOption(
-                                        viewModel = mainViewModel,
-                                        it,
-                                    )
-                                }
-                            }
-                            Column {
-                                progressions.getMostCommon251Keys().forEach {
-                                    Selectable251Option(
-                                        viewModel = mainViewModel,
-                                        it,
-                                    )
-                                }
-                            }
-                            Column {
-                                ChordTypes.allFamilies.forEach {
-                                    SelectableChordOption(
-                                        viewModel = mainViewModel,
-                                        it,
                                     )
                                 }
                             }
@@ -211,6 +208,54 @@ fun SelectableChordOption(
                 Color.Yellow.copy(alpha = 0.6f)
             else Color.LightGray.copy(alpha = 0.3f)
         )
+    }
+}
+
+@Composable
+fun ProgressionPicker(
+    viewModel: MainViewModel,
+    progressions: Progressions,
+) {
+    val selected = viewModel.activated251Key.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
+    var selectedIndex by remember { mutableStateOf(viewModel.current251Index) }
+    val items = progressions.getMostCommon251Keys()
+
+    Box(modifier = Modifier
+        .padding(20.dp)
+        .width(300.dp)
+        .wrapContentSize(Alignment.TopCenter)) {
+        Text(selected.value?.name ?: "",modifier = Modifier
+            .height(50.dp)
+            .clickable(onClick = { expanded = true })
+            .background(
+                com.neffapps.jazzchords.ui.theme.Anthrazit
+            )
+            , Color.Yellow.copy(alpha = 0.6f)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .background(
+                    com.neffapps.jazzchords.ui.theme.Anthrazit
+                )
+        ) {
+            items.forEachIndexed { index, key ->
+                DropdownMenuItem(onClick = {
+                    selectedIndex = index
+                    expanded = false
+                    viewModel.toggle251Key(key)
+                }) {
+                    Text(
+                        text = key.name,
+                        color = if (selected.value?.name == key.name)
+                            Color.Yellow.copy(alpha = 0.6f)
+                        else Color.LightGray.copy(alpha = 0.3f)
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -261,52 +306,6 @@ fun StrumArrow(
         modifier = Modifier.size(24.dp, 60.dp),
         tint = if (beat.value >= index) { Color.LightGray } else {Color.Black}
     )
-}
-
-@ExperimentalUnitApi
-@Composable
-fun Selectable251Option(
-    viewModel: MainViewModel,
-    key: Key,
-) {
-    val selected = viewModel.activated251Key.collectAsState()
-
-    Box(modifier = Modifier
-        .padding(top = 15.dp, start = 30.dp, end = 80.dp)
-        .clickable {
-            viewModel.toggle251Key(key)
-        }
-    ) {
-        Text(
-            text = "2-5-1 in " + key.name,
-            color = if (selected.value?.name == key.name)
-                Color.Yellow.copy(alpha = 0.6f)
-            else Color.LightGray.copy(alpha = 0.3f)
-        )
-    }
-}
-
-@ExperimentalUnitApi
-@Composable
-fun TwoFiveOneOption(
-    viewModel: MainViewModel,
-    key: Key,
-) {
-    val selected = viewModel.activated251Key.collectAsState()
-
-    Box(modifier = Modifier
-        .padding(top = 15.dp, start = 30.dp, end = 80.dp)
-        .clickable {
-            viewModel.toggle251Key(key)
-        }
-    ) {
-        Text(
-            text = key.name,
-            color = if (selected.value?.name == key.name)
-                Color.Yellow.copy(alpha = 0.6f)
-            else Color.LightGray.copy(alpha = 0.3f)
-        )
-    }
 }
 
 @ExperimentalComposeUiApi
@@ -384,7 +383,6 @@ fun Content(
     val showCurrentChord = viewModel.showCurrentChord.collectAsState(false)
 
     Surface(color = com.neffapps.jazzchords.ui.theme.Anthrazit) {
-        StrumArrows(viewModel = viewModel, width = frets.sumOf { it.width.toDouble() })
 
         Column {
             Row(

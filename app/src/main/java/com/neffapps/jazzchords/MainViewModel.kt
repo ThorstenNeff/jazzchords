@@ -15,7 +15,7 @@ class MainViewModel: ViewModel() {
     private val chordFamilies = ChordTypes.allFamilies
     val currentChord = MutableStateFlow(chords[0])
     val showCurrentChord = MutableStateFlow(false)
-    val activated251Key = MutableStateFlow<Key?>(Progressions().Ascending251Cmaj7)
+    val activated251Key = MutableStateFlow<Key?>(Progressions().getMostCommon251Keys().first())
     val beatIndex = MutableStateFlow<Long>(-1)
     var current251Index = 0
 
