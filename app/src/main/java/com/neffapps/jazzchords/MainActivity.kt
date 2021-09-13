@@ -29,6 +29,7 @@ import androidx.lifecycle.lifecycleScope
 import com.neffapps.jazzchords.notes.*
 import com.neffapps.jazzchords.strums.StrumType
 import com.neffapps.jazzchords.timing.FlowTimer
+import com.neffapps.jazzchords.ui.theme.Anthrazit
 import com.neffapps.jazzchords.ui.theme.JazzchordsTheme
 import kotlinx.coroutines.flow.collect
 import kotlin.math.PI
@@ -304,7 +305,13 @@ fun StrumArrow(
         imageVector = drawable,
         contentDescription = "",
         modifier = Modifier.size(24.dp, 60.dp),
-        tint = if (beat.value >= index) { Color.LightGray } else {Color.Black}
+        tint = if (beat.value < 0) {
+            Anthrazit
+        } else if (beat.value >= index) {
+            Color.LightGray
+        } else {
+            Color.Black
+        }
     )
 }
 
