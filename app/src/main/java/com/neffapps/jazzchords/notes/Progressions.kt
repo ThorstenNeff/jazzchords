@@ -244,9 +244,9 @@ class Progressions {
                 getMin7Chord("Cm7", 0),
                 getMin7Chord("Dm7", 0),
                 getMaj7Chord("Ebmaj7", 0),
-                getMaj7Chord("F7", 0),
-                getMaj7Chord("Gm7", 0),
-                getMaj7Chord("Am7b5", 0),
+                getDom7Chord("F7", 0),
+                getMin7Chord("Gm7", 0),
+                getHalfDim7Chord("Am7b5", 0),
             ),
             halfNoteType = HalfNoteType.FLAT,
         )
@@ -256,13 +256,13 @@ class Progressions {
         Key(
             name = "Gm7 Complete",
             chords = listOf(
-                getMaj7Chord("Gm7", 0),
-                getMaj7Chord("Am7b5", 0),
+                getMin7Chord("Gm7", 0),
+                getHalfDim7Chord("Am7b5", 0),
                 getMaj7Chord("Bbmaj7", 0),
                 getMin7Chord("Cm7", 0),
                 getMin7Chord("Dm7", 0),
                 getMaj7Chord("Ebmaj7", 0),
-                getMaj7Chord("F7", 0),
+                getDom7Chord("F7", 0),
             ),
             halfNoteType = HalfNoteType.FLAT,
         )
@@ -276,9 +276,9 @@ class Progressions {
                 getMin7Chord("Am7", 0),
                 getMin7Chord("Bm7", 0),
                 getMaj7Chord("Cmaj7", 0),
-                getMaj7Chord("D7", 0),
-                getMaj7Chord("Em7", 0),
-                getMaj7Chord("F#m7b5", 0),
+                getDom7Chord("D7", 0),
+                getMin7Chord("Em7", 0),
+                getHalfDim7Chord("F#m7b5", 0),
             ),
             halfNoteType = HalfNoteType.SHARP,
         )

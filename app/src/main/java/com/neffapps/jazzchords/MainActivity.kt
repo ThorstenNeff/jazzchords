@@ -15,14 +15,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.lifecycle.lifecycleScope
@@ -31,7 +36,9 @@ import com.neffapps.jazzchords.strums.StrumType
 import com.neffapps.jazzchords.timing.FlowTimer
 import com.neffapps.jazzchords.ui.theme.Anthrazit
 import com.neffapps.jazzchords.ui.theme.JazzchordsTheme
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import org.intellij.lang.annotations.JdkConstants
 import kotlin.math.PI
 import kotlin.math.atan2
 
@@ -129,6 +136,7 @@ class MainActivity : ComponentActivity() {
                             progressions = progressions,
                         )
                     }
+                    FilmCountdown(mainViewModel)
                 }
 
                 Column(
@@ -389,30 +397,10 @@ fun Content(
     flowTimer: FlowTimer
 ) {
     val chord by viewModel.currentChord.collectAsState()
-    val beat = viewModel.beatIndex.collectAsState()
     val showCurrentChord = viewModel.showCurrentChord.collectAsState(false)
+    val beat = viewModel.beatIndex.collectAsState()
 
     Surface(color = com.neffapps.jazzchords.ui.theme.Anthrazit) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                color = Color.White,
-                text = when {
-                    !showCurrentChord.value -> {
-                        if (beat.value > -1) {
-                            "${(beat.value / 2) + 1}"
-                        } else {
-                            ""
-                        }
-                    }
-                    else -> ""
-                },
-                fontSize = TextUnit(48.0f, TextUnitType.Sp),
-            )
-        }
-
         Column {
             Row(
                 modifier = Modifier
@@ -655,6 +643,73 @@ fun FretStringView(
     }
 }
 
+@ExperimentalUnitApi
+@Composable
+fun FilmCountdown(
+    viewModel: MainViewModel
+) {
+    //val beat = MutableStateFlow(4)
+    //val showCurrentChord = MutableStateFlow(false)
+    val beat = viewModel.beatIndex.collectAsState()
+    val showCurrentChord = viewModel.showCurrentChord.collectAsState()
+
+    if (!showCurrentChord.value && beat.value >= 0) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(width = 150.dp, height = 150.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .drawBehind {
+                        drawLine(
+                            color = Color.Black,
+                            start = Offset(0f, center.y),
+                            end = Offset(size.width, center.y),
+                            strokeWidth = 3.dp.toPx()
+                        )
+                        drawLine(
+                            color = Color.Black,
+                            start = Offset(center.x, 0f),
+                            end = Offset(center.x, size.height),
+                            strokeWidth = 3.dp.toPx()
+                        )
+                        drawCircle(
+                            color = Color.LightGray,
+                            radius = size.width / 2f - 32f,
+                            center = center,
+                            style = Stroke(width = 2f)
+                        )
+                        drawCircle(
+                            color = Color.LightGray,
+                            radius = size.width / 2f - 52f,
+                            center = center,
+                            style = Stroke(width = 2f)
+                        )
+                    }
+            ) {
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.Center),
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    text = when {
+                        !showCurrentChord.value -> {
+                            if (beat.value > -1) {
+                                "${(beat.value / 2) + 1}"
+                            } else {
+                                ""
+                            }
+                        }
+                        else -> ""
+                    },
+                    fontSize = TextUnit(48.0f, TextUnitType.Sp),
+                )
+            }
+        }
+    }
+}
+
 @ExperimentalComposeUiApi
 @ExperimentalUnitApi
 @Preview
@@ -663,6 +718,6 @@ fun PhotographerCardPreview() {
     val mainViewModel = MainViewModel()
     val flowTimer = FlowTimer()
     JazzchordsTheme {
-        StrumArrows(viewModel = mainViewModel, width = 200.0)
+        FilmCountdown(viewModel = mainViewModel)
     }
 }
