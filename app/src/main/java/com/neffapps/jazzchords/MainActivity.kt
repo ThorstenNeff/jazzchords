@@ -389,9 +389,29 @@ fun Content(
     flowTimer: FlowTimer
 ) {
     val chord by viewModel.currentChord.collectAsState()
+    val beat = viewModel.beatIndex.collectAsState()
     val showCurrentChord = viewModel.showCurrentChord.collectAsState(false)
 
     Surface(color = com.neffapps.jazzchords.ui.theme.Anthrazit) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                color = Color.White,
+                text = when {
+                    !showCurrentChord.value -> {
+                        if (beat.value > -1) {
+                            "${(beat.value / 2) + 1}"
+                        } else {
+                            ""
+                        }
+                    }
+                    else -> ""
+                },
+                fontSize = TextUnit(48.0f, TextUnitType.Sp),
+            )
+        }
 
         Column {
             Row(
