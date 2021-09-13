@@ -88,11 +88,19 @@ class Progressions {
     )
 
     val Gmaj7_251 = Key(
-        name = "Gmaj7",
+        name = "Gmaj7 251 Ascending",
         chords = listOf(
             getMin7Chord("Am7"),
             getDom7Chord("D7"),
             getMaj7Chord("Gmaj7"),
+
+            getMin7Chord("Am7", 1),
+            getDom7Chord("D7", 1),
+            getMaj7Chord("Gmaj7", 1),
+
+            getMin7Chord("Am7", 2),
+            getDom7Chord("D7", 2),
+            getMaj7Chord("Gmaj7", 2),
         ),
         halfNoteType = HalfNoteType.SHARP
     )
@@ -189,7 +197,7 @@ class Progressions {
 
     fun getFlyMeToTheMoonKey() = listOf(
         Key(
-            name = "Fly me to the moon in CMaj7",
+            name = "Fly me to the moon CMaj7",
             chords = listOf(
                 getMin7Chord("Am7",0),
                 getMin7Chord("Dm7", 0),
@@ -207,7 +215,7 @@ class Progressions {
 
     fun getAutumnLeavesKey() = listOf(
         Key(
-            name = "Autum Leaves in BbMaj7",
+            name = "Autum Leaves BbMaj7",
             chords = listOf(
                 getMin7Chord("Cm7", 0),
                 getDom7Chord("F7", 0),
@@ -228,15 +236,62 @@ class Progressions {
         )
     )
 
+    fun getBMaj7Complete() = listOf(
+        Key(
+            name = "Bmaj7 Complete",
+            chords = listOf(
+                getMaj7Chord("Bbmaj7", 0),
+                getMin7Chord("Cm7", 0),
+                getMin7Chord("Dm7", 0),
+                getMaj7Chord("Ebmaj7", 0),
+                getMaj7Chord("F7", 0),
+                getMaj7Chord("Gm7", 0),
+                getMaj7Chord("Am7b5", 0),
+            ),
+            halfNoteType = HalfNoteType.FLAT,
+        )
+    )
+
+    fun getGm7Complete() = listOf(
+        Key(
+            name = "Gm7 Complete",
+            chords = listOf(
+                getMaj7Chord("Gm7", 0),
+                getMaj7Chord("Am7b5", 0),
+                getMaj7Chord("Bbmaj7", 0),
+                getMin7Chord("Cm7", 0),
+                getMin7Chord("Dm7", 0),
+                getMaj7Chord("Ebmaj7", 0),
+                getMaj7Chord("F7", 0),
+            ),
+            halfNoteType = HalfNoteType.FLAT,
+        )
+    )
+
+    fun getGMaj7Complete() = listOf(
+        Key(
+            name = "Gmaj7 Complete",
+            chords = listOf(
+                getMaj7Chord("Gmaj7", 0),
+                getMin7Chord("Am7", 0),
+                getMin7Chord("Bm7", 0),
+                getMaj7Chord("Cmaj7", 0),
+                getMaj7Chord("D7", 0),
+                getMaj7Chord("Em7", 0),
+                getMaj7Chord("F#m7b5", 0),
+            ),
+            halfNoteType = HalfNoteType.SHARP,
+        )
+    )
+
     fun getMostCommon251Keys() = listOf(
         getFlyMeToTheMoonKey().first(),
         getAutumnLeavesKey().first(),
-        Cmaj7_251,
-        Ascending251Cmaj7,
-        Dmaj7_251,
-        Fmaj7_251,
+        getBMaj7Complete().first(),
+        getGm7Complete().first(),
+        getGMaj7Complete().first(),
         Gmaj7_251,
-        Bbmaj7_251,
+        Ascending251Cmaj7,
     )
 
 
