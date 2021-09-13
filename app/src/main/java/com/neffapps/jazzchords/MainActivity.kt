@@ -173,6 +173,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        mainViewModel.toggle251Key(progressions.getMostCommon251Keys().first())
     }
 
     private fun handleQuarterSecond() {
