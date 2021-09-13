@@ -228,7 +228,7 @@ class Progressions {
                 getMaj7Chord("Bbmaj7", 2),
                 getMaj7Chord("Emaj7", 2),
             ),
-            halfNoteType = HalfNoteType.SHARP,
+            halfNoteType = HalfNoteType.FLAT,
         )
     )
 }
