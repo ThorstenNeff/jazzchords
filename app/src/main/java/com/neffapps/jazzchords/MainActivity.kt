@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -662,6 +663,13 @@ fun FilmCountdown(
                     .size(width = 150.dp, height = 150.dp)
                     .align(Alignment.CenterHorizontally)
                     .drawBehind {
+                        drawRect(
+                            brush = Brush.radialGradient(
+                                colors = listOf(Color.LightGray, Anthrazit),
+                                center = Offset.Unspecified,
+                            ),
+                            size = size
+                        )
                         drawLine(
                             color = Color.Black,
                             start = Offset(0f, center.y),
