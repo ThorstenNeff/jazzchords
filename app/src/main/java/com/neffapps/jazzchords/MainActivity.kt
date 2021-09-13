@@ -106,7 +106,7 @@ class MainActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier
                             .align(Alignment.Start)
-                            .padding(top = 100.dp)
+                            .padding(top = 20.dp)
                     ) {
                         StrumArrows(
                             viewModel = mainViewModel,
@@ -497,7 +497,7 @@ fun Content(
                     )
                 }
                 Box(modifier = Modifier
-                    .padding(end = 50.dp, top = 15.dp)
+                    .padding(top = 15.dp)
                     .clickable {
                         viewModel.stepForward()
                         flowTimer.pause()
