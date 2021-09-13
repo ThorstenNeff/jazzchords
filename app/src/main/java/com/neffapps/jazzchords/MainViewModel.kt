@@ -1,10 +1,11 @@
 package com.neffapps.jazzchords
 
-import android.util.Log
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import com.neffapps.jazzchords.notes.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 
 class MainViewModel: ViewModel() {
 
@@ -16,7 +17,12 @@ class MainViewModel: ViewModel() {
     val currentChord = MutableStateFlow(chords[0])
     val showCurrentChord = MutableStateFlow(false)
     val activated251Key = MutableStateFlow<Key?>(Progressions().getMostCommon251Keys().first())
-    val beatIndex = MutableStateFlow<Long>(-1)
+    val eightNoteBeatIndex = MutableStateFlow<Long>(-1)
+
+    val quarterNoteDuration = MutableStateFlow<Long>(1000)
+
+    val bpm = MutableStateFlow<Long>(60)
+
     var current251Index = 0
 
     val activatedChordFamilies = mutableStateMapOf(
@@ -101,7 +107,6 @@ class MainViewModel: ViewModel() {
                         chords.addAll(it.chords)
                     }
             }
-            Log.d("TEST", "updateChords ${chords.size}")
         }
     }
 
@@ -122,8 +127,8 @@ class MainViewModel: ViewModel() {
     fun handleQuarterSecond(switchChords: Boolean = true) {
         showCurrentChord.value = switchChords
         passedSixteenths++
-        beatIndex.value = (passedSixteenths / 2) % 8
-        Log.d("timer", "Beatindex: ${beatIndex.value}")
+        eightNoteBeatIndex.value = (passedSixteenths / 2) % 8
+
         var nextSlot: Long = 0
         if (timeSlotIndex < timeSlots.size) {
             nextSlot = timeSlots[timeSlotIndex]
@@ -146,12 +151,19 @@ class MainViewModel: ViewModel() {
 
     fun resetTimer() {
         passedSixteenths = 0
-        beatIndex.value = -1
+        eightNoteBeatIndex.value = -1
         timeSlotIndex = timeSlots.size
     }
 
-    fun setBpm(bpm: Long) {
+    fun setBpm(bpmValue: Long) {
         // bpm is just speed, handle in acticity for now
+        if (bpmValue > 0) {
+            bpm.value = bpmValue
+            quarterNoteDuration.value = ((60f / bpmValue) * 1000).toLong() * 2
+        } else {
+            bpm.value = 0
+            quarterNoteDuration.value = 0
+        }
     }
 
     fun stepBack() {

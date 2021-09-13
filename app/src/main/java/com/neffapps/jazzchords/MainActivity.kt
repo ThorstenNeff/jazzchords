@@ -5,6 +5,7 @@ import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,9 +20,9 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.boundsInWindow
@@ -37,9 +38,8 @@ import com.neffapps.jazzchords.strums.StrumType
 import com.neffapps.jazzchords.timing.FlowTimer
 import com.neffapps.jazzchords.ui.theme.Anthrazit
 import com.neffapps.jazzchords.ui.theme.JazzchordsTheme
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
-import org.intellij.lang.annotations.JdkConstants
+import kotlinx.coroutines.flow.map
 import kotlin.math.PI
 import kotlin.math.atan2
 
@@ -48,8 +48,8 @@ import kotlin.math.atan2
 class MainActivity : ComponentActivity() {
 
     private lateinit var flowTimer: FlowTimer
-    private var bpm: Long = 60
-    private val bpmPresets = listOf<Long>(60, 80, 100, 120, 140, 160, 180, 200, 220, 240)
+    private var bpm: Long = 30
+    private val bpmPresets = listOf<Long>(30, 40, 60, 80, 120, 140, 180, 200, 220, 240)
 
     private lateinit var allFrets: List<Fret>
     private val mainViewModel by viewModels<MainViewModel>()
@@ -184,6 +184,7 @@ class MainActivity : ComponentActivity() {
         }
 
         mainViewModel.toggle251Key(progressions.getMostCommon251Keys().first())
+        mainViewModel.setBpm(bpm)
     }
 
     private fun handleQuarterSecond() {
@@ -305,7 +306,7 @@ fun StrumArrow(
     index: Int,
     type: StrumType
 ) {
-    val beat = viewModel.beatIndex.collectAsState()
+    val beat = viewModel.eightNoteBeatIndex.collectAsState()
 
     val drawable = when (type) {
         StrumType.DOWN -> ImageVector.vectorResource(id = R.drawable.ic_uparrow)
@@ -399,7 +400,7 @@ fun Content(
 ) {
     val chord by viewModel.currentChord.collectAsState()
     val showCurrentChord = viewModel.showCurrentChord.collectAsState(false)
-    val beat = viewModel.beatIndex.collectAsState()
+    val beat = viewModel.eightNoteBeatIndex.collectAsState()
 
     Surface(color = com.neffapps.jazzchords.ui.theme.Anthrazit) {
         Column {
@@ -651,10 +652,47 @@ fun FilmCountdown(
 ) {
     //val beat = MutableStateFlow(4)
     //val showCurrentChord = MutableStateFlow(false)
-    val beat = viewModel.beatIndex.collectAsState()
+
+    val quarterNoteBeatIndex = viewModel.eightNoteBeatIndex.map {
+        if (it.toInt() != -1) {
+            it / 2
+        } else {
+            it
+        }
+    }.collectAsState(initial = -1)
+
+    val duration = viewModel.quarterNoteDuration.collectAsState()
     val showCurrentChord = viewModel.showCurrentChord.collectAsState()
 
-    if (!showCurrentChord.value && beat.value >= 0) {
+    var currentRotation by remember { mutableStateOf(0f) }
+    val rotation = remember { Animatable(currentRotation) }
+
+    LaunchedEffect(quarterNoteBeatIndex.value) {
+        if (!showCurrentChord.value && quarterNoteBeatIndex.value.toInt() >= 0) {
+            rotation.animateTo(
+                targetValue = 0f,
+                animationSpec = repeatable(
+                    iterations = 1,
+                    animation = tween(1),
+                    repeatMode = RepeatMode.Restart
+                )
+            )
+            rotation.animateTo(
+                targetValue = 360f,
+                animationSpec = repeatable(
+                    iterations = 1,
+                    animation = tween(duration.value.toInt() / 2, easing = LinearEasing),
+                    repeatMode = RepeatMode.Restart
+                )
+            ) {
+                currentRotation = value
+            }
+        }
+    }
+
+    if (!showCurrentChord.value && quarterNoteBeatIndex.value >= 0) {
+
+        // Infinite repeatable rotation when is playing
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -694,17 +732,27 @@ fun FilmCountdown(
                             center = center,
                             style = Stroke(width = 2f)
                         )
+                        rotate(
+                            degrees = rotation.value,
+                        ) {
+                            drawLine(
+                                start = center,
+                                end = Offset(center.x, 0f),
+                                color = Color.Black,
+                                strokeWidth = 2.0f
+                            )
+                        }
                     }
             ) {
-                Text(
+                 Text(
                     modifier = Modifier
                         .align(Alignment.Center),
                     color = Color.White,
                     textAlign = TextAlign.Center,
                     text = when {
                         !showCurrentChord.value -> {
-                            if (beat.value > -1) {
-                                "${(beat.value / 2) + 1}"
+                            if (quarterNoteBeatIndex.value > -1) {
+                                "${(quarterNoteBeatIndex.value) + 1}"
                             } else {
                                 ""
                             }
