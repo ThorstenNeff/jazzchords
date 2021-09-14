@@ -1,20 +1,21 @@
 package com.neffapps.jazzchords
 
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import com.neffapps.jazzchords.notes.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 
 class MainViewModel: ViewModel() {
+    private val progressions = Progressions()
 
     private var chords = mutableListOf<Chord>().also {
-        it.addAll(Progressions().Ascending251Cmaj7.chords)
+        it.addAll(progressions.Ascending251Cmaj7.chords)
     }
 
     private val chordFamilies = ChordTypes.allFamilies
     val currentChord = MutableStateFlow(chords[0])
+    val nextChord = MutableStateFlow(progressions.emptyChord)
+
     val showCurrentChord = MutableStateFlow(false)
     val activated251Key = MutableStateFlow<Key?>(Progressions().getMostCommon251Keys().first())
     val eightNoteBeatIndex = MutableStateFlow<Long>(-1)
@@ -40,6 +41,7 @@ class MainViewModel: ViewModel() {
                 current251Index = chords.size -1
                 currentChord.value = it.chords[current251Index]
             }
+            updateNextChord(it)
         } ?: run {
             chords.let {
                 val currentChordIndex = rand(0, it.size - 1)
@@ -56,6 +58,7 @@ class MainViewModel: ViewModel() {
             if (current251Index >= chords.size) current251Index = 0
             if (current251Index > -1 && current251Index < chords.size) {
                 currentChord.value = it.chords[current251Index]
+                updateNextChord(it)
             }
         } ?: run {
             chords.let {
@@ -64,6 +67,14 @@ class MainViewModel: ViewModel() {
                     currentChord.value = it[currentChordIndex]
                 }
             }
+        }
+    }
+
+    fun updateNextChord(key: Key) {
+        var nextChordIndex = current251Index + 1
+        if (nextChordIndex >= chords.size) nextChordIndex = 0
+        if (nextChordIndex > -1 && nextChordIndex < chords.size) {
+            nextChord.value = key.chords[nextChordIndex]
         }
     }
 
