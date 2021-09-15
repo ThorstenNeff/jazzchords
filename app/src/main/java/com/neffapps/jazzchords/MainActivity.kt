@@ -155,7 +155,7 @@ class MainActivity : ComponentActivity() {
                                     .align(Alignment.Start)
                                     .padding(
                                         top = 20.dp,
-                                        start = (allFrets[0].width + 10).dp
+                                        start = 2.dp
                                     )
                             ) {
                                 Column() {
@@ -727,7 +727,7 @@ fun PreviewFretStringView(
                     .size(height - 2.dp)
                     .align(Alignment.Center),
                 shape = CircleShape,
-                color = Color.Yellow.copy(alpha = 0.2f)
+                color = Color.Blue.copy(alpha = 0.2f)
             ) {
                 // No content here
             }
