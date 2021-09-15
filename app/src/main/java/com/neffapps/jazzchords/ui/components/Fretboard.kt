@@ -44,11 +44,12 @@ fun FretView(
 ) {
     Column {
         for (note in stringNotes) {
-            FretStringView(openPosition, note, width, baseHeight, viewModel)
+            if (note.name == note.flatName) {
+                FretStringView(openPosition, note, width, baseHeight, viewModel)
+            } else {
+                FretStringAccidentalView(openPosition, note, width, baseHeight, viewModel)
+            }
 
-//            val backgroundColor =
-//                if (!openPosition) Color.Black
-//                else com.neffapps.jazzchords.ui.theme.Anthrazit
             if (note.string == 4) {
                 Box (
                     modifier = Modifier
@@ -85,6 +86,54 @@ fun FretView(
 @ExperimentalUnitApi
 @Composable
 fun FretStringView(
+    openPosition: Boolean,
+    note: Note,
+    width: Float,
+    baseHeight: Float,
+    viewModel: MainViewModel
+) {
+    val chord by viewModel.currentChord.collectAsState()
+    val showCurrentChord = viewModel.showCurrentChord.collectAsState(false)
+
+    val backgroundColor =
+        if (!openPosition) Color.Black
+        else Anthrazit
+    Box(
+        modifier = Modifier
+            .background(backgroundColor)
+            .width(Dp(width))
+            .height(Dp(baseHeight))
+    ) {
+        Divider(
+            color = Color.LightGray.copy(alpha = 0.5f),
+            thickness = Dp( 1.0f),
+            modifier = Modifier.align(Alignment.Center)
+        )
+        if (note.noteInChord(chord.notes) && showCurrentChord.value) {
+            Surface(
+                modifier = Modifier
+                    .size(Dp(baseHeight - 2.0f))
+                    .align(Alignment.Center),
+                shape = CircleShape,
+                color = Color.Yellow.copy(alpha = 0.2f)
+            ) {
+                // No content here
+            }
+        }
+        if (note.textVisible) {
+            Text(
+                note.name,
+                fontSize = TextUnit(4.0f + width/4.0f, TextUnitType.Sp),
+                color = Color.LightGray,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
+}
+
+@ExperimentalUnitApi
+@Composable
+fun FretStringAccidentalView(
     openPosition: Boolean,
     note: Note,
     width: Float,
