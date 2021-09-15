@@ -4,7 +4,6 @@ TODO-List:
 
 * Show chord notes
 * Fix stop button
-* Reduce number of observers (especially for Fretboard)
 * Edit progressions yourself
 * Preview measures
 * Different timings
