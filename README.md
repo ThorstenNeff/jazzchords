@@ -2,7 +2,6 @@ Android chord trainer app for different jazz progressions using Android Compose
 
 TODO-List: 
 
-* Preview single chord
 * Show chord notes
 * Fix stop button
 * Reduce number of observers (especially for Fretboard)
