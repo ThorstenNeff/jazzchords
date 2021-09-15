@@ -15,6 +15,7 @@ class MainViewModel: ViewModel() {
     private val chordFamilies = ChordTypes.allFamilies
     val currentChord = MutableStateFlow(chords[0])
     val nextChord = MutableStateFlow(progressions.emptyChord)
+    val activeNotes = mutableMapOf<Note, MutableStateFlow<Pair<Note, Boolean>>>()
 
     val showCurrentChord = MutableStateFlow(false)
     val activated251Key = MutableStateFlow<Key?>(Progressions().getMostCommon251Keys().first())
@@ -30,23 +31,42 @@ class MainViewModel: ViewModel() {
             Pair(chordFamilies[0].id, false)
         )
 
+    init {
+        val notes = Notes().allNotes
+        for (note in notes) {
+            activeNotes[note] = MutableStateFlow(Pair(note, false))
+        }
+    }
+
+    // Dont send signal to all FretStringViews, when chord changes; just affected ones
+    fun updateCurrentChord(chord: Chord) {
+        val oldChord = currentChord.value
+        oldChord.notes.forEach {
+            activeNotes[it]?.value = Pair(it, false)
+        }
+        chord.notes.forEach {
+            activeNotes[it]?.value = Pair(it, true)
+        }
+        currentChord.value = chord
+    }
+
     fun lastChord() {
         activated251Key.value?.let {
             current251Index--
             if (current251Index >= chords.size) current251Index = 0
             if (current251Index > -1 && current251Index < chords.size) {
-                currentChord.value = it.chords[current251Index]
+                updateCurrentChord(it.chords[current251Index])
             }
             if (current251Index < 0) {
                 current251Index = chords.size -1
-                currentChord.value = it.chords[current251Index]
+                updateCurrentChord(it.chords[current251Index])
             }
             updateNextChord(it)
         } ?: run {
             chords.let {
                 val currentChordIndex = rand(0, it.size - 1)
                 if (currentChordIndex > -1) {
-                    currentChord.value = it[currentChordIndex]
+                    updateCurrentChord(it[currentChordIndex])
                 }
             }
         }
@@ -57,14 +77,14 @@ class MainViewModel: ViewModel() {
             current251Index++
             if (current251Index >= chords.size) current251Index = 0
             if (current251Index > -1 && current251Index < chords.size) {
-                currentChord.value = it.chords[current251Index]
+                updateCurrentChord(it.chords[current251Index])
                 updateNextChord(it)
             }
         } ?: run {
             chords.let {
                 val currentChordIndex = rand(0, it.size - 1)
                 if (currentChordIndex > -1) {
-                    currentChord.value = it[currentChordIndex]
+                    updateCurrentChord(it[currentChordIndex])
                 }
             }
         }
@@ -124,7 +144,7 @@ class MainViewModel: ViewModel() {
     fun rewind() {
         activated251Key.value?.let {
             current251Index = -1
-            currentChord.value = Chord("","", listOf(), "")
+            updateCurrentChord(Chord("","", listOf(), ""))
             resetTimer()
         }
     }

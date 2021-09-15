@@ -21,6 +21,7 @@ import com.neffapps.jazzchords.notes.Fret
 import com.neffapps.jazzchords.notes.HalfNoteType
 import com.neffapps.jazzchords.notes.Note
 import com.neffapps.jazzchords.ui.theme.Anthrazit
+import kotlinx.coroutines.flow.MutableStateFlow
 
 
 @ExperimentalUnitApi
@@ -45,9 +46,27 @@ fun FretView(
     Column {
         for (note in stringNotes) {
             if (note.name == note.flatName) {
-                FretStringView(openPosition, note, width, baseHeight, viewModel)
+                viewModel.activeNotes[note]?.let {
+                    FretStringView(
+                        openPosition,
+                        note,
+                        it,
+                        width,
+                        baseHeight,
+                        viewModel
+                    )
+                }
             } else {
-                FretStringAccidentalView(openPosition, note, width, baseHeight, viewModel)
+                viewModel.activeNotes[note]?.let {
+                    FretStringAccidentalView(
+                        openPosition,
+                        note,
+                        it,
+                        width,
+                        baseHeight,
+                        viewModel
+                    )
+                }
             }
 
             if (note.string == 4) {
@@ -88,11 +107,12 @@ fun FretView(
 fun FretStringView(
     openPosition: Boolean,
     note: Note,
+    noteStateFlow: MutableStateFlow<Pair<Note, Boolean>>,
     width: Float,
     baseHeight: Float,
     viewModel: MainViewModel
 ) {
-    val chord by viewModel.currentChord.collectAsState()
+    val noteState by noteStateFlow.collectAsState()
     val showCurrentChord = viewModel.showCurrentChord.collectAsState(false)
 
     val backgroundColor =
@@ -109,7 +129,7 @@ fun FretStringView(
             thickness = Dp( 1.0f),
             modifier = Modifier.align(Alignment.Center)
         )
-        if (note.noteInChord(chord.notes) && showCurrentChord.value) {
+        if (noteState.second && showCurrentChord.value) {
             Surface(
                 modifier = Modifier
                     .size(Dp(baseHeight - 2.0f))
@@ -136,11 +156,12 @@ fun FretStringView(
 fun FretStringAccidentalView(
     openPosition: Boolean,
     note: Note,
+    noteStateFlow: MutableStateFlow<Pair<Note, Boolean>>,
     width: Float,
     baseHeight: Float,
     viewModel: MainViewModel
 ) {
-    val chord by viewModel.currentChord.collectAsState()
+    val noteState by noteStateFlow.collectAsState()
     val key by viewModel.activated251Key.collectAsState()
     val showCurrentChord = viewModel.showCurrentChord.collectAsState(false)
 
@@ -158,7 +179,7 @@ fun FretStringAccidentalView(
             thickness = Dp( 1.0f),
             modifier = Modifier.align(Alignment.Center)
         )
-        if (note.noteInChord(chord.notes) && showCurrentChord.value) {
+        if (noteState.second && showCurrentChord.value) {
             Surface(
                 modifier = Modifier
                     .size(Dp(baseHeight - 2.0f))

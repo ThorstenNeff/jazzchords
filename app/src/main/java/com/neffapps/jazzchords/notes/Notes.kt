@@ -10,7 +10,7 @@ class Notes {
         return null
     }
 
-    private val allNotes: List<Note> = listOf(
+    val allNotes: List<Note> = listOf(
         G_0_G,
         GSharp_1_G,
         A_2_G,
