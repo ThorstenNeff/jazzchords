@@ -1,9 +1,10 @@
 package com.neffapps.jazzchords.notes
 
+@Suppress("LocalVariableName")
 class Dim7Chords {
 
     private val notes = Notes()
-    val maxFretNumber = 12
+    private val maxFretNumber = 12
 
     private fun calculateCShapeDim7Chords(): List<Chord> {
         val chordList = mutableListOf<Chord>()

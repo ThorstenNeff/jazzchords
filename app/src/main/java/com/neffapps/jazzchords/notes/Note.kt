@@ -8,12 +8,7 @@ data class Note(
     val textVisible: Boolean = true,
     val pressed: Boolean = false,
 ) {
-    fun noteInChord(chordNotes: List<Note>): Boolean {
-        for (note in chordNotes) {
-            if (note.fret == fret && note.string == string) {
-                return true
-            }
-        }
-        return false
+    fun noteInChord(chordNotes: List<Note>) = chordNotes.any { note ->
+        note.fret == fret && note.string == string
     }
 }

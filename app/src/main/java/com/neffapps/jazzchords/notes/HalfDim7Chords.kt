@@ -3,7 +3,7 @@ package com.neffapps.jazzchords.notes
 class HalfDim7Chords {
 
     private val notes = Notes()
-    val maxFretNumber = 12
+    private val maxFretNumber = 12
 
     private fun calculateCShapeMinor7B5Chords(): List<Chord> {
         val chordList = mutableListOf<Chord>()

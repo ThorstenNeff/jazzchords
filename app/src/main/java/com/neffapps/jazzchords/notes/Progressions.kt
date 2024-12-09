@@ -1,5 +1,6 @@
 package com.neffapps.jazzchords.notes
 
+@Suppress("PropertyName")
 class Progressions {
     val major7Chords = Major7Chords().getMajor7Chords()
     val minor7Chords = Minor7Chords().getMinor7Chords()

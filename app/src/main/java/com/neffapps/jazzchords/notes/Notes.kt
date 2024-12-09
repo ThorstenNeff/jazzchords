@@ -1,13 +1,8 @@
 package com.neffapps.jazzchords.notes
 
 class Notes {
-    fun find(fret: Int, string: Int): Note? {
-        for (note in allNotes) {
-            if (note.fret == fret && note.string == string) {
-                return note
-            }
-        }
-        return null
+    fun find(fret: Int, string: Int) = allNotes.find { note ->
+        note.fret == fret && note.string == string
     }
 
     val allNotes: List<Note> = listOf(
