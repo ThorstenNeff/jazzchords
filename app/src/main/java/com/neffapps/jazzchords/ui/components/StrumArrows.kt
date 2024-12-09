@@ -1,7 +1,7 @@
 package com.neffapps.jazzchords.ui.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
